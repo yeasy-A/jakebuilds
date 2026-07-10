@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Homelab forge schematic: hypervisor running twenty containerized services, connected to storage, backups, and a mesh VPN.">
+<title>Homelab forge schematic</title>
+<style>
+.blk{fill:none;stroke:#C9974B;stroke-width:1;}
+.sq{fill:none;stroke:#C9974B;stroke-width:1;opacity:.7;}
+.tr{fill:none;stroke:#C9974B;stroke-width:1;opacity:.55;}
+.mesh{fill:none;stroke:#C9974B;stroke-width:1;opacity:.4;}
+.dot{fill:#C9974B;opacity:.9;}
+.gk{fill:none;stroke:#C9974B;stroke-width:1;opacity:.5;}
+.lbl{font-family:'JetBrains Mono',monospace;fill:#9C9080;font-size:11px;letter-spacing:2px;}
+</style>
+
+<!-- corner ticks (Greek key fragments) -->
+<g>
+<path class="gk" transform="translate(14,14)" d="M0,18 L0,0 L34,0 L34,6 L10,6 L10,12 L28,12 L28,18"/>
+<path class="gk" transform="translate(886,14) scale(-1,1)" d="M0,18 L0,0 L34,0 L34,6 L10,6 L10,12 L28,12 L28,18"/>
+<path class="gk" transform="translate(14,526) scale(1,-1)" d="M0,18 L0,0 L34,0 L34,6 L10,6 L10,12 L28,12 L28,18"/>
+<path class="gk" transform="translate(886,526) scale(-1,-1)" d="M0,18 L0,0 L34,0 L34,6 L10,6 L10,12 L28,12 L28,18"/>
+</g>
+
+<!-- HYPERVISOR -->
+<rect class="blk" x="80" y="60" width="460" height="200"/>
+<text class="lbl" x="100" y="84">HYPERVISOR</text>
+<g>
+<rect class="sq" x="226" y="100" width="24" height="24"/><rect class="sq" x="262" y="100" width="24" height="24"/><rect class="sq" x="298" y="100" width="24" height="24"/><rect class="sq" x="334" y="100" width="24" height="24"/><rect class="sq" x="370" y="100" width="24" height="24"/>
+<rect class="sq" x="226" y="136" width="24" height="24"/><rect class="sq" x="262" y="136" width="24" height="24"/><rect class="sq" x="298" y="136" width="24" height="24"/><rect class="sq" x="334" y="136" width="24" height="24"/><rect class="sq" x="370" y="136" width="24" height="24"/>
+<rect class="sq" x="226" y="172" width="24" height="24"/><rect class="sq" x="262" y="172" width="24" height="24"/><rect class="sq" x="298" y="172" width="24" height="24"/><rect class="sq" x="334" y="172" width="24" height="24"/><rect class="sq" x="370" y="172" width="24" height="24"/>
+<rect class="sq" x="226" y="208" width="24" height="24"/><rect class="sq" x="262" y="208" width="24" height="24"/><rect class="sq" x="298" y="208" width="24" height="24"/><rect class="sq" x="334" y="208" width="24" height="24"/><rect class="sq" x="370" y="208" width="24" height="24"/>
+</g>
+<text class="lbl" x="310" y="250" text-anchor="middle">SERVICES &#215;20</text>
+
+<!-- MESH VPN -->
+<rect class="blk" x="600" y="60" width="220" height="200"/>
+<g class="mesh">
+<line x1="710" y1="155" x2="710" y2="110"/>
+<line x1="710" y1="155" x2="710" y2="200"/>
+<line x1="710" y1="155" x2="655" y2="155"/>
+<line x1="710" y1="155" x2="765" y2="155"/>
+<line x1="710" y1="110" x2="765" y2="155"/>
+<line x1="765" y1="155" x2="710" y2="200"/>
+<line x1="710" y1="200" x2="655" y2="155"/>
+<line x1="655" y1="155" x2="710" y2="110"/>
+</g>
+<circle class="dot" cx="710" cy="155" r="2.2"/>
+<circle class="dot" cx="710" cy="110" r="2"/>
+<circle class="dot" cx="710" cy="200" r="2"/>
+<circle class="dot" cx="655" cy="155" r="2"/>
+<circle class="dot" cx="765" cy="155" r="2"/>
+<text class="lbl" x="710" y="250" text-anchor="middle">MESH VPN</text>
+
+<!-- STORAGE -->
+<rect class="blk" x="80" y="380" width="200" height="100"/>
+<text class="lbl" x="180" y="434" text-anchor="middle">STORAGE</text>
+
+<!-- BACKUPS -->
+<rect class="blk" x="620" y="380" width="200" height="100"/>
+<text class="lbl" x="720" y="434" text-anchor="middle">BACKUPS</text>
+
+<!-- traces: HYPERVISOR -> STORAGE -->
+<polyline class="tr" points="150,260 150,330 180,330 180,380"/>
+<circle class="dot" cx="150" cy="260" r="2"/><circle class="dot" cx="150" cy="330" r="2"/><circle class="dot" cx="180" cy="330" r="2"/><circle class="dot" cx="180" cy="380" r="2"/>
+
+<!-- traces: HYPERVISOR -> BACKUPS -->
+<polyline class="tr" points="470,260 470,330 720,330 720,380"/>
+<circle class="dot" cx="470" cy="260" r="2"/><circle class="dot" cx="470" cy="330" r="2"/><circle class="dot" cx="720" cy="330" r="2"/><circle class="dot" cx="720" cy="380" r="2"/>
+
+<!-- traces: HYPERVISOR -> MESH VPN -->
+<polyline class="tr" points="540,140 570,140 570,155 600,155"/>
+<circle class="dot" cx="540" cy="140" r="2"/><circle class="dot" cx="570" cy="140" r="2"/><circle class="dot" cx="570" cy="155" r="2"/><circle class="dot" cx="600" cy="155" r="2"/>
+
+<!-- traces: BACKUPS -> MESH VPN (off-site over the mesh) -->
+<polyline class="tr" points="780,380 780,320 800,320 800,260"/>
+<circle class="dot" cx="780" cy="380" r="2"/><circle class="dot" cx="780" cy="320" r="2"/><circle class="dot" cx="800" cy="320" r="2"/><circle class="dot" cx="800" cy="260" r="2"/>
+</svg>

@@ -1,0 +1,2872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jake T. — The Forge</title>
+<meta name="description" content="Build what lasts. Navy veteran · builder of systems that last.">
+<meta name="theme-color" content="#060505">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jake T. — The Forge">
+<meta property="og:description" content="Build what lasts. Navy veteran · builder of systems that last.">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Jake T. — The Forge">
+<meta name="twitter:description" content="Build what lasts. Navy veteran · builder of systems that last.">
+<meta name="twitter:image" content="assets/og-image.png">
+
+<link rel="icon" href="assets/anvil-mark.svg" type="image/svg+xml">
+
+<style>
+/* ===================================================================
+   THE FORGE — inline styles
+   Color tokens, type scale, and section layout live below.
+   =================================================================== */
+
+@font-face{
+  font-family:'Fraunces';
+  src:url('assets/fonts/fraunces-300.woff2') format('woff2');
+  font-weight:300; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Fraunces';
+  src:url('assets/fonts/fraunces-600.woff2') format('woff2');
+  font-weight:600; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'JetBrains Mono';
+  src:url('assets/fonts/jetbrainsmono-400.woff2') format('woff2');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'JetBrains Mono';
+  src:url('assets/fonts/jetbrainsmono-500.woff2') format('woff2');
+  font-weight:500; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Lora';
+  src:url('assets/fonts/lora-400.woff2') format('woff2');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Lora';
+  src:url('assets/fonts/lora-italic.woff2') format('woff2');
+  font-weight:400; font-style:italic; font-display:swap;
+}
+
+:root{
+  /* ---- iron & fire palette — the only colors on this page ---- */
+  --void:       #060505; /* deepest sky, page background */
+  --iron:       #0E0C0A; /* panel/section background */
+  --iron-edge:  #1D1813; /* panel borders, hairlines */
+  --ember-deep: #1C0F06; /* horizon gradient, low */
+  --ember:      #7A3D10; /* horizon gradient, mid glow */
+  --ember-hot:  #C86A1E; /* horizon crest, hover heat */
+  --flame:      #E06A28; /* flame-star fill, spark particles */
+  --gold:       #C9974B; /* constellation threads, rules, borders */
+  --gold-bright:#EBBd6E; /* active thread, focused star, links */
+  --white-hot:  #FFF3DC; /* peak glow centers, gauge tips, ignite flash */
+  --star:       #EDE6D8; /* star cores, H1 text */
+  --text:       #E2D9C6; /* body text */
+  --text-dim:   #9C9080; /* captions, kickers, mono labels */
+
+  /* ---- supplementary (non-color) tokens: type stacks + motion ---- */
+  --type-display: 'Fraunces', Georgia, 'Times New Roman', serif; /* titles/display only */
+  --type-body: 'Lora', Georgia, serif; /* body prose — readable at small sizes */
+  --type-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --ease-section: cubic-bezier(.16,.84,.44,1);
+  --ease-expo: cubic-bezier(.16,1,.3,1); /* weld drift ease-out-expo */
+}
+
+/* ---- base reset ---- */
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+html{ background:var(--void); }
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:var(--type-body); /* general paragraph body — Lora; titles opt into --type-display */
+  font-weight:400;
+  font-size:1.08rem;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4,p,ul,ol,li,table,figure{ margin:0; padding:0; }
+ul,ol{ list-style:none; }
+table{ border-collapse:collapse; width:100%; }
+img,svg{ display:block; max-width:100%; }
+a{ color:var(--gold-bright); text-decoration:none; }
+a:hover,a:focus-visible{ text-decoration:underline; }
+:focus-visible{ outline:2px solid var(--gold-bright); outline-offset:2px; }
+
+/* ---- struck-metal treatment: letterpress into iron ---- */
+.struck-metal{
+  text-shadow:
+    0 -1px 0 rgba(0,0,0,.5),
+    0 1px 0 rgba(201,151,75,.18);
+}
+
+/* ---- mono kicker convention: ALL-CAPS, 0.18em tracking ---- */
+.kicker,
+.mono-caps{
+  font-family:var(--type-mono);
+  text-transform:uppercase;
+  letter-spacing:0.18em;
+}
+
+/* ---- skip link (first element in body) ---- */
+.skip-link{
+  position:absolute;
+  top:-4rem; left:0.75rem;
+  z-index:1000;
+  background:var(--iron);
+  color:var(--star);
+  border:1px solid var(--gold);
+  font-family:var(--type-mono);
+  font-size:0.8rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:0.85rem 1.25rem;
+  transition:top 150ms ease;
+}
+.skip-link:focus{ top:0.75rem; text-decoration:none; }
+
+/* ===================================================================
+   HEADER #sky — the hero, 100dvh. Living starforge.
+   Layer order (explicit z-index, stacked bottom to top):
+   0 sky-bg (CSS gradients) · 1 sky-field (ambient canvas) ·
+   2 sky-constellation-wrap (SVG) · 3 sky-content (text) · 4 greek key.
+   =================================================================== */
+#sky{
+  height:100dvh;
+  min-height:100dvh;
+  background:var(--void);
+  display:flex;
+  flex-direction:column;
+  padding:0;
+  position:relative;
+  overflow:hidden;
+}
+
+/* ---- layer 0: rules-of-light gradients — warm, pooled, ember only ---- */
+.sky-bg{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(60% 34% at 50% 108%, rgba(200,106,30,.40) 0%, transparent 70%),
+    radial-gradient(40% 20% at 50% 100%, rgba(255,243,220,.09) 0%, transparent 60%),
+    linear-gradient(to bottom, var(--void) 0%, var(--void) 56%, var(--ember-deep) 100%);
+}
+
+/* ---- layer 1: ambient starfield canvas ---- */
+.sky-field{
+  position:absolute; inset:0; z-index:1;
+  width:100%; height:100%; display:block;
+  opacity:0;
+  transition:opacity 1400ms ease;
+}
+.sky-field.is-visible{ opacity:1; }
+
+/* ---- layer 2: the interactive SVG constellation ---- */
+.sky-constellation-wrap{
+  position:relative; z-index:2;
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  padding:6vh 1rem 0;
+}
+.sky-constellation{
+  width:min(80vw, 640px);
+  height:auto;
+  max-height:58vh;
+  overflow:visible;
+}
+
+/* -- stars -- */
+/* NOTE: two rendering gotchas here:
+   (1) transitioning `opacity` on a <g> ancestor of a radialGradient-filled
+   <circle> blanks the gradient's paint entirely in this rendering path — so
+   opacity is never a transitioned property here; JS pops it instantly.
+   (2) requestAnimationFrame chains do not reliably continue under headless
+   `--virtual-time-budget` capture (only the first callback fires), so the
+   position drift is NOT rAF-driven — it uses this CSS `transform` transition
+   instead, which does reach translate(0px,0px) reliably under
+   virtual-time-budget capture, even where a painted PNG can otherwise
+   show a stale mid-transition frame. */
+.star-drift{
+  transform:translate(0,0);
+  opacity:1;
+  transition:transform 1300ms var(--ease-expo);
+  transform-box:fill-box;
+  transform-origin:center;
+}
+.star-halo{ opacity:.55; transition:opacity 200ms ease, r 200ms ease; }
+.star-core{ opacity:.95; }
+.star--dim .star-halo{ opacity:.22; }
+.star--dim .star-core{ opacity:.55; }
+.cross-flare{ opacity:.55; }
+
+.star-hit-area{ pointer-events:all; }
+.star--dim{ pointer-events:none; }
+.thread-main,.thread-underglow,.fuse-connector{ pointer-events:none; }
+.star-hit{ cursor:pointer; }
+.star-hit .star-halo{ opacity:.6; }
+.star-hit:hover .star-halo,
+.star-hit:focus-visible .star-halo,
+.star-hit.is-active .star-halo{ opacity:1; }
+.star-hit:focus-visible{ outline:2px solid var(--gold-bright); outline-offset:3px; }
+/* NOTE: labels live in a separate labelsGroup, siblings of (not descendants
+   of) their .star-hit. So brightening on hover/focus/active is driven by JS
+   toggling .star-label.is-bright directly (bindStarInteraction), not a
+   `.star-hit:hover .star-label` descendant selector, which would no longer
+   match. */
+.star-label.is-bright{ fill:var(--text); }
+.star-hit .star-core.is-igniting,
+.star-hit .flame-core.is-igniting{ fill:var(--white-hot) !important; }
+
+.star-label{
+  font-family:var(--type-mono);
+  font-size:6.6px;
+  letter-spacing:.6px;
+  fill:var(--text-dim);
+  paint-order:stroke;      /* knockout halo: interrupts anvil connector lines so they never read as crossing the label text */
+  stroke:var(--void);
+  stroke-width:2.2px;
+  stroke-linejoin:round;
+  opacity:0;
+  transition:opacity 500ms ease, fill 200ms ease;
+  pointer-events:none;
+}
+#constellation.labels-visible .star-label{ opacity:1; }
+
+/* -- threads -- */
+.thread-underglow{
+  stroke:var(--gold); stroke-width:3; opacity:.12; fill:none;
+  transition:stroke-dashoffset 500ms linear, stroke 80ms linear, opacity 80ms linear;
+}
+.thread-main{
+  stroke:var(--gold); stroke-width:1; opacity:.55; fill:none;
+  transition:stroke-dashoffset 500ms linear, stroke 80ms linear, opacity 80ms linear;
+}
+.thread-main.is-fusing{ stroke:var(--white-hot); opacity:1; }
+.thread-underglow.is-fusing{ stroke:var(--white-hot); opacity:.4; }
+.fuse-connector{
+  stroke:var(--white-hot); stroke-width:1.4; opacity:0; fill:none;
+  transition:opacity 80ms linear;
+}
+.fuse-connector.is-fusing{ opacity:1; }
+
+/* ---- layer 3: hook line / name block / scroll cue ---- */
+.sky-content{
+  position:relative; z-index:3;
+  max-width:44rem;
+  margin:0 auto;
+  text-align:center;
+  padding:0 1.5rem 3rem;
+}
+.hook-line{
+  font-family:var(--type-display);
+  font-weight:300;
+  font-style:normal;
+  font-size:clamp(1.1rem, 2.6vw, 1.6rem);
+  letter-spacing:0.01em;
+  color:var(--text);
+  margin-bottom:2.25rem;
+  opacity:0;
+  transition:opacity 550ms ease, transform 500ms ease, opacity 500ms ease;
+}
+.hook-line.is-visible{ opacity:1; }
+.hook-line.is-settled{ opacity:.7; transform:translateY(-.35rem); }
+.name-block{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity 500ms var(--ease-section), transform 500ms var(--ease-section);
+}
+.name-block.is-visible{ opacity:1; transform:translateY(0); }
+.name-kicker{
+  font-size:0.72rem;
+  color:var(--text-dim);
+  margin-bottom:0.9rem;
+}
+.name-title{
+  font-family:var(--type-display);
+  font-weight:600;
+  font-size:clamp(2.6rem, 7vw, 5.5rem);
+  line-height:1.05;
+  color:var(--star);
+  margin-bottom:1.1rem;
+  /* hero name renders uppercase, letter-spaced, matching the OG image.
+     text-transform (not literal uppercase markup) keeps the source text
+     properly-cased for screen readers / copy-paste while rendering
+     uppercase visually. */
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+}
+.name-role{
+  font-size:0.78rem;
+  color:var(--gold-bright);
+}
+.scroll-cue{
+  margin-top:2.25rem;
+  font-size:0.7rem;
+  color:var(--text-dim);
+  opacity:0;
+  transition:opacity 500ms ease;
+}
+.scroll-cue.is-visible{
+  opacity:1;
+  animation:cueBob 2s ease-in-out infinite;
+}
+.scroll-cue .glyph{ display:inline-block; }
+@keyframes cueBob{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-6px); }
+}
+
+/* ---- layer 4: greek-key strip pinned to the sky's own viewport edge ---- */
+.sky-greek-key{
+  position:absolute; z-index:4;
+  left:0; right:0; bottom:0;
+  width:100%; height:14px; margin:0;
+}
+
+@media (max-width:640px){
+  .sky-constellation{ width:88vw; max-height:44vh; }
+  .sky-constellation-wrap{ padding-top:4vh; }
+}
+
+/* ===================================================================
+   #descent — the transition band: pure scroll-driven parallax,
+   NO scroll-jacking/snap. All motion is transform/opacity, driven by the
+   descent() module's passive, rAF-batched scroll listener — see script.
+   =================================================================== */
+#descent{
+  min-height:140dvh;
+  background:var(--void);
+  position:relative;
+  overflow:hidden;
+}
+@media (max-width:700px){
+  #descent{ min-height:90dvh; }
+}
+.descent-stars{
+  position:absolute;
+  top:-15%; left:0; right:0; height:65%;
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+.descent-stars svg{ width:100%; height:100%; display:block; }
+.descent-horizon{
+  position:absolute; left:0; right:0; bottom:0; height:65%;
+  background:linear-gradient(to bottom, transparent 0%, var(--ember-deep) 45%, var(--ember) 100%);
+  opacity:0;
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+.descent-ground{
+  position:absolute; left:0; right:0; bottom:0;
+  width:100%; height:14vh;
+  opacity:0;
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+.descent-kicker-wrap{
+  position:absolute; left:0; right:0; top:50%;
+  transform:translateY(-50%);
+  text-align:center;
+  pointer-events:none;
+}
+.descent-kicker{
+  display:inline-block;
+  color:var(--text-dim);
+  opacity:0;
+  will-change:transform,opacity;
+}
+@media (prefers-reduced-motion:reduce){
+  .descent-stars,.descent-horizon,.descent-ground,.descent-kicker{
+    transition:none !important;
+  }
+}
+
+/* ===================================================================
+   Shared floor layout
+   =================================================================== */
+main section{
+  padding:8rem 1.5rem;
+}
+main section > .floor{
+  max-width:55rem;
+  margin:0 auto;
+}
+#works{ background:var(--iron); }
+#maker{
+  /* background warms: --iron with a low ember radial from bottom */
+  background:
+    radial-gradient(ellipse 130% 65% at 50% 125%, var(--ember-deep) 0%, transparent 60%),
+    var(--iron);
+}
+#shipped{ background:var(--iron); }
+#commission{ background:var(--void); }
+
+.section-kicker{
+  font-size:0.72rem;
+  color:var(--text-dim);
+  margin-bottom:4rem;
+}
+
+@media (max-width:640px){
+  main section{ padding:5rem 1.25rem; }
+  .section-kicker{ margin-bottom:2.5rem; }
+}
+
+/* ===================================================================
+   #works — the forge floor plaques
+   =================================================================== */
+.plaques{
+  display:flex;
+  flex-direction:column;
+}
+.plaque{
+  position:relative;
+  background:var(--iron);
+  border:1px solid var(--iron-edge);
+  padding:2.5rem;
+  transition:box-shadow 200ms ease, border-color 200ms ease;
+}
+.plaque + .plaque{ margin-top:20dvh; }
+.plaque:hover,
+.plaque:focus-within{
+  box-shadow:0 0 32px -8px var(--ember-hot);
+  border-color:color-mix(in srgb, var(--gold) 40%, var(--iron-edge));
+}
+.plaque .tick{ position:absolute; width:14px; height:14px; pointer-events:none; }
+.plaque .tick-tl{ top:-1px; left:-1px; border-top:2px solid var(--gold); border-left:2px solid var(--gold); }
+.plaque .tick-tr{ top:-1px; right:-1px; border-top:2px solid var(--gold); border-right:2px solid var(--gold); }
+.plaque .tick-bl{ bottom:-1px; left:-1px; border-bottom:2px solid var(--gold); border-left:2px solid var(--gold); }
+.plaque .tick-br{ bottom:-1px; right:-1px; border-bottom:2px solid var(--gold); border-right:2px solid var(--gold); }
+
+.plaque-kicker{
+  font-size:0.68rem;
+  color:var(--text-dim);
+  margin-bottom:0.85rem;
+}
+.plaque-title{
+  font-family:var(--type-display);
+  font-weight:600;
+  font-size:2rem;
+  color:var(--star);
+  margin-bottom:0.85rem;
+}
+.plaque-line{
+  font-family:var(--type-body);
+  font-weight:400;
+  font-size:1.08rem;
+  line-height:1.6;
+  color:var(--text);
+  max-width:58ch;
+  margin-bottom:1.75rem;
+}
+.plaque-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.6rem;
+  margin-bottom:1.5rem;
+}
+.plaque-chip{
+  /* three mono stat chips — explicit font-family needed here: without it
+     this inherits the Fraunces body font, which silently drops the "+"
+     glyph (not in the vendored Fraunces subset, same issue as the ▼/→
+     glyphs elsewhere); JetBrains Mono carries it. */
+  font-family:var(--type-mono);
+  font-size:0.66rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  border:1px solid var(--iron-edge);
+  padding:0.4rem 0.7rem;
+}
+.media-slot{
+  position:relative;
+  aspect-ratio:16/9;
+  border:1px solid var(--iron-edge);
+  background:var(--void);
+  margin-bottom:1.75rem;
+  overflow:hidden; /* clips the Ken Burns scale + the vignette canvas to the 1px frame */
+}
+
+/* ---- screenshot plaques (muster / sparks / patternmap / veteran-finder / boilerplate / faith): the shot +
+   its slow Ken Burns (animation-duration 18s, timing linear, direction
+   alternate, scale 1.0→1.045). Each plaque gets its own pan origin + a
+   negative delay so the three don't breathe in lockstep.
+   Reduced-motion: no @keyframes rule is even active — a static frame. ---- */
+.plaque-shot{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transform-origin:var(--kb-origin, 50% 50%);
+}
+@media (prefers-reduced-motion:no-preference){
+  .plaque-shot{ animation:kenburns 18s linear infinite alternate; animation-delay:var(--kb-delay, 0s); }
+}
+@keyframes kenburns{ from{ transform:scale(1); } to{ transform:scale(1.045); } }
+.media-slot--muster .plaque-shot{ --kb-origin:50% 30%; --kb-delay:-3s; }
+.media-slot--sparks .plaque-shot{ --kb-origin:72% 62%; --kb-delay:-9s; }
+.media-slot--patternmap .plaque-shot{ --kb-origin:50% 45%; --kb-delay:-15s; }
+.media-slot--veteran-finder .plaque-shot{ --kb-origin:30% 40%; --kb-delay:-6s; }
+.media-slot--boilerplate .plaque-shot{ --kb-origin:50% 50%; --kb-delay:-12s; }
+.media-slot--faith .plaque-shot{ --kb-origin:50% 28%; --kb-delay:-18s; }
+
+/* ---- FIRMAMENT plaque: live galaxy vignette canvas (vignette()) +
+   its bottom-right overlay link ---- */
+.vignette-canvas{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  display:block;
+}
+.vignette-action{
+  position:absolute;
+  right:0; bottom:0;
+  z-index:2;
+}
+
+/* ---- HOMELAB plaque: the inlined schematic SVG fills the slot — inlined
+   so the page's own @font-face reaches its JetBrains Mono labels; an
+   <img>-loaded SVG would fall back to the system mono ---- */
+.homelab-schematic-wrap{ width:100%; height:100%; }
+.homelab-schematic-wrap svg{ width:100%; height:100%; display:block; }
+
+.plaque-action,
+.vignette-action{
+  font-family:var(--type-mono);
+  font-weight:500;
+  font-size:0.82rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--gold-bright);
+  display:inline-block;
+  /* Padded, invisible hit area ≥44 CSS px at every viewport for all
+     links/buttons, sized past the 44px floor to clear sub-pixel rounding
+     (same margin-of-safety the star hit-areas use). The padding grows the
+     box; the equal negative margin pulls the flow footprint back to its
+     unpadded size, so nothing shifts. */
+  padding:14px 0.9rem;
+  margin:-14px -0.9rem;
+}
+.vignette-action{ margin:0; } /* absolutely positioned — no flow footprint to protect */
+
+@media (max-width:640px){
+  .plaque{ padding:1.75rem; }
+}
+
+/* ===================================================================
+   #maker — the flame section
+   =================================================================== */
+.maker-top{
+  display:flex;
+  align-items:flex-start;
+  gap:4rem;
+  margin-bottom:5rem;
+}
+.maker-flame-col{
+  flex:0 0 auto;
+  width:100%;
+  max-width:18rem;
+}
+.maker-gauges-col{
+  flex:1 1 auto;
+  min-width:0;
+  padding-top:0.5rem;
+}
+.maker-caption{
+  font-size:0.66rem;
+  color:var(--text-dim);
+  margin-top:1.5rem;
+}
+.gauges-list{
+  display:flex;
+  flex-direction:column;
+  gap:1.25rem;
+}
+.gauge-item .gauge-name{
+  font-family:var(--type-mono);
+  font-weight:500;
+  font-size:0.85rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--star);
+}
+.gauge-item{
+  border-top:1px solid var(--iron-edge);
+  padding-top:1.25rem;
+}
+.gauge-item:first-child{ border-top:none; padding-top:0; }
+.gauge-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+.gauge-value{
+  font-family:var(--type-mono);
+  font-weight:500;
+  font-size:0.85rem;
+  color:var(--gold-bright);
+  font-variant-numeric:tabular-nums;
+}
+.gauge-track{
+  position:relative;
+  height:8px;
+  border-radius:4px;
+  background:var(--iron-edge);
+  margin:0.7rem 0;
+  /* no overflow:hidden — the fill-tip's blur bloom must spill past the
+     track edge; border-radius on .gauge-fill itself keeps the bar's own
+     corners clean without clipping the glow. */
+}
+.gauge-fill{
+  position:relative;
+  height:100%;
+  width:0%; /* heat-up animates this 0 → value */
+  min-width:8px; /* a lit bar always reads as a bar, never a sliver, even near 0 */
+  border-radius:4px;
+  background:linear-gradient(90deg, var(--ember-deep), var(--ember-hot), var(--white-hot));
+  transition:width 1.2s var(--ease-section);
+}
+.gauge-fill-tip{
+  position:absolute; top:50%; right:0;
+  width:9px; height:9px;
+  transform:translate(35%,-50%);
+  border-radius:50%;
+  background:var(--white-hot);
+  box-shadow:0 0 6px 1px var(--white-hot), 0 0 16px 5px var(--ember-hot);
+  opacity:.95;
+  pointer-events:none;
+}
+.gauge-proof{
+  font-family:var(--type-body);
+  font-weight:400;
+  font-size:1rem;
+  line-height:1.5;
+  color:var(--text);
+}
+.gauge-source{
+  font-family:var(--type-mono);
+  font-size:0.6rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  margin-top:0.35rem;
+}
+
+/* ---- the flame, enlarged ----
+   Reuses CONSTELLATION.flame's 13-point geometry + its flame-only threads
+   (built in JS by makerFlame(), same source data as the sky). Deviation:
+   CONSTELLATION.flame's baked-in strength-N roles (f3,f4,f5,f9,f10) all
+   sit in the tip's 47-unit band (y 42.83–89.33) — too clustered to stay
+   legible once each star needs its own label callout. Reassigned locally
+   to 5 points spread across the full height of the flame body; IDEATION
+   keeps the true tip (f5) so prominence order (brightest/highest) is
+   preserved. Mapping lives in makerFlame(); CONSTELLATION.flame's own
+   `role` field is untouched. */
+.maker-flame-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:2/3; /* JS overwrites with the SVG's exact viewBox ratio */
+}
+.maker-flame-svg{ position:absolute; inset:0; width:100%; height:100%; }
+.mf-thread{ stroke:var(--gold); stroke-width:1; opacity:.4; fill:none; }
+.mf-dot{ fill:var(--flame); }
+.maker-flame-stars{ position:absolute; inset:0; }
+.flame-star{
+  position:absolute;
+  width:44px; height:44px; /* ≥44 CSS px hit area at every viewport */
+  transform:translate(-50%,-50%);
+  display:flex; align-items:center; justify-content:center;
+  background:none; border:0; padding:0; margin:0;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.flame-star-halo{
+  position:absolute; top:50%; left:50%;
+  width:22px; height:22px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle, var(--flame) 0%, transparent 70%);
+  opacity:calc(var(--rank-op,.5) * .4);
+  transition:opacity 200ms ease, background 200ms ease;
+  pointer-events:none;
+}
+.flame-star-dot{
+  position:relative;
+  width:5px; height:5px;
+  border-radius:50%;
+  background:var(--flame);
+  opacity:var(--rank-op,.5);
+  box-shadow:0 0 6px 1px color-mix(in srgb, var(--flame) 60%, transparent);
+  transition:background 200ms ease, box-shadow 200ms ease, transform 200ms ease, opacity 200ms ease;
+  pointer-events:none;
+}
+.flame-star.is-active .flame-star-halo{
+  opacity:.9;
+  background:radial-gradient(circle, var(--white-hot) 0%, var(--flame) 55%, transparent 75%);
+}
+.flame-star.is-active .flame-star-dot{
+  background:var(--white-hot);
+  opacity:1;
+  box-shadow:0 0 14px 3px var(--white-hot);
+  transform:scale(1.7);
+}
+.flame-star-callout{
+  position:absolute;
+  top:50%;
+  width:max-content;
+  max-width:11rem;
+  pointer-events:none;
+}
+.flame-star-callout.side-right{ left:100%; transform:translate(0.9rem,-50%); text-align:left; }
+.flame-star-callout.side-left{ right:100%; transform:translate(-0.9rem,-50%); text-align:right; }
+/* name: a persistent small title on every strength-star — like the hook stars'
+   project names. Dim at rest; brightens when its star is lit (hover/tap). */
+.flame-star-callout-name{
+  display:block;
+  font-family:var(--type-mono);
+  font-weight:500;
+  font-size:0.72rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  color:var(--text-dim);
+  transition:color 200ms ease;
+}
+/* line: the brief explanation — floats below the name, revealed on hover/tap only */
+.flame-star-callout-line{
+  position:absolute;
+  top:100%;
+  margin-top:0.3rem;
+  width:max-content;
+  max-width:11rem;
+  font-family:var(--type-display);
+  font-weight:300;
+  font-size:0.85rem;
+  line-height:1.4;
+  color:var(--text);
+  opacity:0;
+  transition:opacity 200ms ease;
+}
+.flame-star-callout.side-right .flame-star-callout-line{ left:0; text-align:left; }
+.flame-star-callout.side-left .flame-star-callout-line{ right:0; text-align:right; }
+.flame-star.is-active .flame-star-callout-name{ color:var(--star); }
+.flame-star.is-active .flame-star-callout-line{ opacity:1; }
+@media (max-width:700px){
+  .maker-top{ flex-direction:column; gap:3rem; }
+  .maker-flame-col{ max-width:22rem; margin:0 auto; }
+  .flame-star-callout.side-left,
+  .flame-star-callout.side-right{
+    left:50%; right:auto; top:100%;
+    transform:translate(-50%, 0.6rem);
+    max-width:min(78vw, 15rem);
+    text-align:center;
+  }
+  .flame-star-callout.side-left .flame-star-callout-line,
+  .flame-star-callout.side-right .flame-star-callout-line{
+    left:50%; right:auto; transform:translateX(-50%); text-align:center;
+  }
+}
+.holland-chip{
+  font-family:var(--type-mono);
+  font-size:0.66rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  border:1px solid var(--iron-edge);
+  padding:0.75rem 1rem;
+  margin-top:1.75rem;
+  display:inline-block;
+}
+.honesty-footnote{
+  font-family:var(--type-body);
+  font-weight:400;
+  font-style:italic;
+  font-size:0.96rem;
+  line-height:1.55;
+  color:var(--text-dim);
+  margin-top:1.5rem;
+  max-width:58ch;
+}
+.plate-bio{
+  font-family:var(--type-body);
+  font-weight:400;
+  font-size:1.08rem;
+  line-height:1.6;
+  color:var(--text);
+  max-width:60ch;
+}
+.plate-values{
+  font-family:var(--type-mono);
+  font-size:0.72rem;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--gold-bright);
+  margin-top:1.5rem;
+}
+
+/* ===================================================================
+   #shipped — the ledger
+   =================================================================== */
+.ledger{
+  font-family:var(--type-mono);
+  font-size:0.82rem;
+}
+.ledger tr{ border-top:1px solid var(--iron-edge); }
+.ledger tr:first-child{ border-top:none; }
+.ledger td{
+  padding:0.9rem 0.75rem;
+  color:var(--text);
+  vertical-align:top;
+}
+.ledger td:first-child{ color:var(--text-dim); width:4.5rem; padding-left:0; }
+.ledger td:last-child{
+  /* the clause/description column reads as prose, not tabular data —
+     Lora, slightly larger than the mono year/name columns beside it. */
+  padding-right:0;
+  font-family:var(--type-body);
+  font-size:0.92rem;
+  line-height:1.5;
+}
+.ledger .ledger-close td{
+  font-style:italic;
+  color:var(--text-dim);
+  padding-top:1.5rem;
+}
+
+/* ===================================================================
+   #commission — the CTA plate
+   =================================================================== */
+.commission-plate{
+  /* same construction as plaques, slightly heavier border —
+     plaques run 1px --iron-edge; this is 2px --gold, both thicker and hotter. */
+  position:relative;
+  background:var(--iron);
+  border:2px solid var(--gold);
+  padding:3.5rem 2.5rem;
+  text-align:center;
+  max-width:40rem;
+  margin:0 auto;
+}
+.commission-title{
+  font-family:var(--type-display);
+  font-weight:600;
+  font-size:2rem;
+  color:var(--star);
+  margin-bottom:1rem;
+}
+.commission-line{
+  font-family:var(--type-body);
+  font-weight:400;
+  color:var(--text);
+  margin-bottom:2rem;
+}
+.commission-actions{
+  display:flex;
+  gap:2rem;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.commission-action{
+  font-family:var(--type-mono);
+  font-weight:500;
+  font-size:0.82rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--gold-bright);
+  display:inline-block;
+  /* ≥44 CSS px hit area at every viewport, same padded/negative-
+     margin technique as .plaque-action so the flow footprint doesn't shift. */
+  padding:14px 0.9rem;
+  margin:-14px -0.9rem;
+}
+
+@media (max-width:640px){
+  .commission-plate{ padding:2.25rem 1.5rem; }
+}
+
+/* ===================================================================
+   nav#minimap — the docked scrollspy constellation
+   The nav box itself carries NO opacity gate — the accessible link spine
+   (.minimap-links) must stay keyboard-reachable regardless of dock state
+   (an ancestor opacity:0 would make a `position:fixed` focus-reveal on a
+   descendant link render at 0 opacity too, since SVG/CSS opacity composites
+   through the whole subtree — an invisible-but-focusable ghost target).
+   Only .minimap-visual (the decorative miniature SVG) fades in on dock.
+   =================================================================== */
+#minimap{
+  position:fixed;
+  right:1.5rem; bottom:1.5rem;
+  z-index:50;
+  width:120px; height:96px;
+}
+@media (max-width:700px){
+  #minimap{
+    right:0.75rem; bottom:auto; top:0.75rem;
+    width:88px; height:70px;
+  }
+}
+.minimap-visual{
+  position:absolute; inset:0;
+  opacity:0;
+  transform:translateY(12px);
+  transition:opacity 300ms ease, transform 300ms ease;
+  pointer-events:none;
+}
+#minimap.is-docked .minimap-visual{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+.minimap-svg{ width:100%; height:100%; display:block; overflow:visible; }
+.minimap-thread{ stroke:var(--gold); stroke-width:1; opacity:0.4; fill:none; }
+.minimap-dim{ fill:var(--text-dim); opacity:0.25; }
+.minimap-star{ cursor:pointer; }
+.minimap-star-hit{ fill:transparent; }
+.minimap-star-inner{
+  transform-box:fill-box;
+  transform-origin:center;
+  transition:transform 200ms ease;
+}
+.minimap-star-core{ fill:var(--white-hot); opacity:0.7; transition:opacity 200ms ease, fill 150ms ease; }
+.minimap-star-halo{ fill:var(--gold-bright); opacity:0; transition:opacity 200ms ease; }
+.minimap-star[data-star="flame"] .minimap-star-core{ fill:var(--flame); }
+.minimap-star[data-star="flame"] .minimap-star-halo{ fill:var(--flame); }
+.minimap-star:hover .minimap-star-halo,
+.minimap-star:focus-visible .minimap-star-halo{ opacity:0.35; }
+.minimap-star:focus-visible{ outline:2px solid var(--gold-bright); outline-offset:3px; }
+.minimap-star.is-active .minimap-star-inner{ transform:scale(1.3); }
+.minimap-star.is-active .minimap-star-core{ fill:var(--gold-bright); opacity:1; }
+.minimap-star.is-active .minimap-star-halo{
+  opacity:0.4;
+  animation:minimapPulse 2s ease-in-out infinite;
+}
+.minimap-star.is-igniting .minimap-star-core{ fill:var(--white-hot) !important; }
+@keyframes minimapPulse{
+  0%,100%{ opacity:0.25; }
+  50%{ opacity:0.55; }
+}
+.minimap-label{
+  font-family:var(--type-mono);
+  font-size:9px;
+  letter-spacing:0.05em;
+  fill:var(--text-dim);
+  text-transform:uppercase;
+  opacity:0;
+  transition:opacity 150ms ease;
+  pointer-events:none;
+}
+@media (hover:hover) and (min-width:701px){
+  .minimap-star:hover .minimap-label{ opacity:1; }
+}
+.minimap-links{ position:relative; }
+.minimap-link.visually-hidden{
+  position:absolute;
+  width:1px; height:1px;
+  padding:0; margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
+.minimap-link:focus{
+  position:fixed;
+  width:auto; height:auto;
+  margin:0;
+  overflow:visible;
+  clip:auto;
+  white-space:normal;
+  top:1rem; left:1rem;
+  z-index:1000;
+  background:var(--iron);
+  color:var(--star);
+  border:1px solid var(--gold-bright);
+  padding:0.6rem 1rem;
+  font-family:var(--type-mono);
+  font-size:0.75rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+@media (prefers-reduced-motion:reduce){
+  .minimap-visual{ transition:none !important; }
+  .minimap-star-inner{ transition:none !important; }
+  .minimap-star.is-active .minimap-star-halo{ animation:none !important; opacity:0.4 !important; }
+}
+
+/* ===================================================================
+   footer
+   =================================================================== */
+footer{
+  background:var(--void);
+  padding:5rem 1.5rem 2rem;
+  text-align:center;
+}
+.makers-mark{
+  width:56px;
+  height:auto;
+  margin:0 auto 1.5rem;
+}
+.footer-line{
+  font-family:var(--type-mono);
+  font-size:0.68rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+}
+.footer-close{
+  font-family:var(--type-mono);
+  font-size:0.6rem;
+  letter-spacing:0.1em;
+  color:var(--text-dim);
+  margin-top:0.6rem;
+}
+.greek-key-strip{
+  width:100%;
+  height:14px;
+  margin-top:2.5rem;
+}
+
+/* ===================================================================
+   Section fade-up scaffolding (500ms, 24px rise, IntersectionObserver@20%)
+   =================================================================== */
+.reveal{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity 500ms var(--ease-section), transform 500ms var(--ease-section);
+}
+.reveal.is-visible{
+  opacity:1;
+  transform:translateY(0);
+}
+.reveal-row{
+  opacity:0;
+  transition:opacity 500ms ease;
+}
+.reveal-row.is-visible{ opacity:1; }
+
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal-row{
+    transition:none !important;
+    opacity:1 !important;
+    transform:none !important;
+  }
+  .sky-field,
+  .star-drift,
+  .hook-line,
+  .name-block,
+  .scroll-cue,
+  .thread-underglow,
+  .thread-main,
+  .star-label,
+  .gauge-fill{
+    transition:none !important;
+    animation:none !important;
+  }
+  .sky-field{ opacity:1 !important; }
+  .hook-line{ opacity:.7 !important; transform:translateY(-.35rem) !important; }
+  .name-block{ opacity:1 !important; transform:none !important; }
+  .scroll-cue{ opacity:1 !important; }
+  .star-label{ opacity:1 !important; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#works">Skip to the works</a>
+
+<header id="sky">
+  <div class="sky-bg" aria-hidden="true"></div>
+  <canvas id="skyField" class="sky-field" aria-hidden="true"></canvas>
+  <div class="sky-constellation-wrap">
+    <svg id="constellation" class="sky-constellation" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet"><!-- built by constellation() from CONSTELLATION const --></svg>
+  </div>
+  <div class="sky-content">
+    <p class="hook-line" id="hookLine">Build what lasts.</p>
+    <div class="name-block" id="nameBlock">
+      <p class="name-kicker kicker">The forge of</p>
+      <h1 class="name-title struck-metal">Jake T.</h1>
+      <p class="name-role kicker">Navy veteran &middot; builder of systems that last</p>
+    </div>
+    <p class="scroll-cue kicker" id="scrollCue"><span class="glyph" aria-hidden="true">&#9660;</span> Descend</p>
+  </div>
+  <svg class="sky-greek-key" viewBox="0 0 280 14" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="greekKeyPatternSky" width="28" height="14" patternUnits="userSpaceOnUse">
+        <path d="M0,14 L0,0 L14,0 L14,3 L4,3 L4,8 L18,8 L18,3 L14,3"
+              fill="none" stroke="var(--gold)" stroke-width="1.5" opacity="0.25"/>
+      </pattern>
+    </defs>
+    <rect width="280" height="14" fill="url(#greekKeyPatternSky)"/>
+  </svg>
+</header>
+
+<div id="descent" aria-hidden="true"></div>
+
+<main>
+
+  <section id="works">
+    <div class="floor">
+      <h2 class="section-kicker kicker">01 &middot; The works</h2>
+      <div class="plaques" id="worksList"><!-- WORKS rendered here --></div>
+    </div>
+  </section>
+
+  <section id="maker">
+    <div class="floor">
+      <h2 class="section-kicker kicker">02 &middot; The maker</h2>
+
+      <div class="maker-top">
+        <div class="maker-flame-col">
+          <div class="maker-flame-wrap" id="makerFlameWrap">
+            <svg class="maker-flame-svg" id="makerFlameSvg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><!-- built by makerFlame() --></svg>
+            <div class="maker-flame-stars" id="makerFlameStars"><!-- built by makerFlame() --></div>
+          </div>
+          <p class="maker-caption kicker">CliftonStrengths (Gallup) &middot; Top 5 of 34 &middot; Leading domain: Strategic Thinking</p>
+        </div>
+
+        <div class="maker-gauges-col">
+          <ul class="gauges-list" id="gaugesList"><!-- GAUGES rendered here --></ul>
+          <p class="holland-chip" id="hollandChip"></p>
+          <p class="honesty-footnote">Measured, not self-flattered &mdash; from named instruments I&rsquo;ve actually taken. I audit myself the way I audit my systems.</p>
+        </div>
+      </div>
+
+      <div class="maker-block maker-plate">
+        <p class="plate-bio">A Navy veteran turned builder. I make software for a living and a homestead for a life &mdash; given the choice, I&rsquo;d rather build the tool than buy it. I ship small, testable pieces fast, think in systems, and reduce every problem to its next concrete move. I communicate directly, and I keep praise rare enough to mean something.</p>
+        <p class="plate-values">Faith &middot; Family &middot; Craft &middot; Self-Reliance</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="shipped">
+    <div class="floor">
+      <h2 class="section-kicker kicker">03 &middot; Shipped</h2>
+      <table class="ledger">
+        <tbody id="ledgerBody"><!-- LEDGER rendered here --></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="commission">
+    <div class="floor">
+      <h2 class="section-kicker kicker">04 &middot; The commission</h2>
+      <div class="commission-plate">
+        <span class="tick tick-tl" aria-hidden="true"></span>
+        <span class="tick tick-tr" aria-hidden="true"></span>
+        <span class="tick tick-bl" aria-hidden="true"></span>
+        <span class="tick tick-br" aria-hidden="true"></span>
+        <h3 class="commission-title struck-metal">The forge takes commissions.</h3>
+        <p class="commission-line">Open to freelance and contract software work.</p>
+        <div class="commission-actions">
+          <a class="commission-action" href="mailto:jacobbuildsnships@proton.me">Write the forge &rarr;</a>
+          <a class="commission-action" href="https://github.com/yeasy-A" target="_blank" rel="noopener noreferrer">See the code &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<nav id="minimap" aria-label="Section map" hidden></nav>
+
+<footer>
+  <svg class="makers-mark" viewBox="-4 -4 108 78" role="img" aria-label="Anvil maker's mark">
+    <path fill="var(--gold)" opacity="0.5" d="M2,30 L34,14 L92,14 L80,26 L74,42 L86,48 L92,60 L22,60 L28,48 L40,42 L34,26 L34,20 Z"/>
+  </svg>
+  <p class="footer-line">Forged by hand &middot; &copy; 2026 Jake T.</p>
+  <p class="footer-close">the forge itself is the reward</p>
+  <svg class="greek-key-strip" viewBox="0 0 280 14" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="greekKeyPattern" width="28" height="14" patternUnits="userSpaceOnUse">
+        <path d="M0,14 L0,0 L14,0 L14,3 L4,3 L4,8 L18,8 L18,3 L14,3"
+              fill="none" stroke="var(--gold)" stroke-width="1.5" opacity="0.25"/>
+      </pattern>
+    </defs>
+    <rect width="280" height="14" fill="url(#greekKeyPattern)"/>
+  </svg>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  var REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ===== MODULE: data — the only place content lives =====
+  var WORKS = [
+    { id:'firmament', star:'horn', title:'Firmament',
+      line:'The Bible as a navigable galaxy — 35,389 verses as stars, 344,799 cross-references as light.',
+      kicker:'FORGED 2026 · LIVE', visual:'vignette', href:'https://yeasy-a.github.io/Firmament/' },
+    { id:'muster', star:'face-l', title:'Muster',
+      line:'A free field desk for veterans — a VA rating calculator, claim deadlines, PACT Act, and the full benefits stack. Nothing you enter ever leaves your browser.',
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/muster.webp', href:'demos/muster/' },
+    { id:'sparks', star:'face-r', title:'Sparks',
+      line:'Twenty-seven brain-training games, built for the way my own mind actually works — idea-rich, competitive, and better with a scoreboard.',
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/sparks.webp', href:'demos/sparks/' },
+    { id:'patternmap', star:'waist', title:'PatternMap',
+      line:"Scripture's recurring patterns as a navigable graph — Firmament's ancestor.",
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/patternmap.webp', href:'demos/patternmap/' },
+    { id:'veteran-finder', star:'vetfinder', title:'Veteran Finder',
+      line:'A field-manual resource locator — vetted veteran nonprofits by need, era, and mission, with the crisis line always one tap away.',
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/veteran-finder.webp', href:'demos/veteran-finder/' },
+    { id:'boilerplate', star:'boiler', title:'Boilerplate',
+      line:'A prompt engine — a shelf of battle-tested prompts for getting real work out of an AI, filed by the mistake each one prevents.',
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/boilerplate.webp', href:'demos/boilerplate/' },
+    { id:'faith', star:'faith', title:'Faith',
+      line:'A quiet daily companion — verse and saint of the day, the Rosary, the Examen, Divine Mercy, and a small library of prayers.',
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/faith.webp', href:'demos/faith/' },
+    { id:'homelab', star:'base', title:'The Homelab',
+      line:'~20 self-hosted services — media, photos, personal cloud, backups, DNS filtering, and home automation — reached only over a private mesh, nothing exposed to the public internet. Built, broken, and rebuilt by hand.',
+      kicker:'RUNNING SINCE 2025', visual:'schematic', href:null }
+  ];
+
+  // Constellation geometry, inlined verbatim from assets/constellation.json —
+  // never fetched at runtime (no external requests on this page).
+  // Coordinate space: viewBox "0 0 1000 500", traced 1:2.4 from the brand render.
+  var CONSTELLATION = {
+    anvil: [
+      {id:'a0',x:214.5,y:202.0, role:'horn'},
+      {id:'a1',x:334.5,y:175.0, role:'face-l'},
+      {id:'a2',x:559.5,y:175.0, role:'face-r'},
+      {id:'a3',x:526.5,y:220.0, role:'boiler'},
+      {id:'a4',x:511.5,y:271.0},
+      {id:'a5',x:547.5,y:283.0},
+      {id:'a6',x:559.5,y:325.0, role:'vetfinder'},
+      {id:'a7',x:301.5,y:325.0, role:'base'},
+      {id:'a8',x:313.5,y:283.0, role:'faith'},
+      {id:'a9',x:349.5,y:271.0, role:'waist'},
+      {id:'a10',x:334.5,y:220.0},
+      {id:'a11',x:334.5,y:208.0}
+    ],
+    flame: [
+      {id:'f0',x:404.04,y:172.0},
+      {id:'f1',x:397.96,y:141.0},
+      {id:'f2',x:411.54,y:110.0},
+      {id:'f3',x:431.54,y:81.58, role:'strength-2'},
+      {id:'f4',x:446.21,y:59.62, role:'strength-3'},
+      {id:'f5',x:455.67,y:42.83, role:'strength-5'},
+      {id:'f6',x:468.96,y:172.0},
+      {id:'f7',x:474.83,y:146.17},
+      {id:'f8',x:464.5,y:117.75},
+      {id:'f9',x:460.08,y:89.33, role:'strength-1'},
+      {id:'f10',x:457.17,y:62.21, role:'strength-4'},
+      {id:'f11',x:440.42,y:151.33},
+      {id:'f12',x:445.04,y:120.33}
+    ],
+    threads: [
+      ['a0','a1'],['a1','a2'],['a2','a3'],['a3','a4'],['a4','a5'],['a5','a6'],['a6','a7'],
+      ['a7','a8'],['a8','a9'],['a9','a10'],['a10','a11'],['a11','a0'],
+      ['f0','f1'],['f1','f2'],['f2','f3'],['f3','f4'],['f4','f5'],
+      ['f6','f7'],['f7','f8'],['f8','f9'],['f9','f10'],['f10','f5'],['f11','f12']
+    ]
+  };
+
+  var STRENGTHS = [
+    { rank:1, star:'strength-1', name:'IDEATION',     line:'never out of ideas; five of them hang in the sky above' },
+    { rank:2, star:'strength-2', name:'INTELLECTION', line:'thinks before the hammer falls' },
+    { rank:3, star:'strength-3', name:'COMPETITION',  line:'keeps score; plays to finish' },
+    { rank:4, star:'strength-4', name:'ADAPTABILITY', line:'re-plans without breaking' },
+    { rank:5, star:'strength-5', name:'RELATOR',      line:'devoted to the chosen few' }
+  ];
+
+  var GAUGES = [
+    { name:'OPENNESS',       value:91,  valueLabel:'91st percentile', proof:'ideas fast; patterns across unrelated fields',      source:'BIG FIVE' },
+    { name:'ACHIEVEMENT',    value:100, valueLabel:'100',             proof:'built to win',                                      source:'SCHWARTZ PVQ-21' },
+    { name:'TRADITION',      value:100, valueLabel:'100',             proof:'honest work; quiet mastery',                        source:'SCHWARTZ PVQ-21' },
+    { name:'SELF-DIRECTION', value:90,  valueLabel:'90',              proof:'self-taught · self-hosted · self-reliant',          source:'SCHWARTZ PVQ-21' }
+  ];
+  var HOLLAND_CHIP = 'HOLLAND CODE A·R·C (O*NET) — ARTISTIC × REALISTIC: MAKES BEAUTIFUL THINGS THAT WORK.';
+
+  // NOTE: the homelab ledger entry intentionally avoids the real internal
+  // service hostname — internal hostnames don't belong on a public page.
+  // Renamed to 'The Homelab' (matches WORKS[4].title) instead.
+  var LEDGER = [
+    ['2026', 'Firmament',       'a universe of Scripture, in the browser'],
+    ['2026', 'Muster',          'a free field desk for veterans, VA.gov-cited'],
+    ['2026', 'Veteran Finder',  'vetted veteran resources, crisis line always up'],
+    ['2026', 'Faith',           'verse, saint, Rosary, Examen — a daily companion'],
+    ['2026', 'Boilerplate',     'a prompt engine, filed by the mistake it prevents'],
+    ['2026', 'Scripture Engine','SQLite + FTS5, two translations, 345k cross-refs'],
+    ['2026', 'Sparks',          'twenty-seven games, one file'],
+    ['2026', 'PatternMap',      '42 biblical patterns as a graph'],
+    ['2025', 'The Homelab',     '20+ services, self-hosted, built by hand']
+  ];
+
+  // Alt text for the three screenshot plaques: name the app AND
+  // what's visible — never a bare filename or the title alone.
+  var SHOT_ALT = {
+    'muster': 'Muster app Calculator screen showing a 90% combined VA rating dial, a $2,704.30 monthly compensation figure, and a dependents entry form.',
+    'veteran-finder': 'Veteran Finder app — a field-manual "FM 4-VET" resource locator with a prominent crisis-line strip (988, 838255, 911) and organization cards for the DAV, VFW, and American Legion.',
+    'boilerplate': 'Boilerplate prompt-engine app — a dark "shelf" of prompt cards grouped by category (Calibrate, Root Cause, Straight Talk), each with copy and add-to-hopper buttons.',
+    'faith': 'Faith app home screen on a dark theme — a verse of the day (2 Corinthians 12:9), a saint of the day, and tiles for the Examen, Rosary, Divine Mercy, and Prayers.',
+    'sparks': "Sparks app's game-picker grid, showing twenty-seven brain-training games including Sparks, The Link, Odd One Out, Word Chain, Rhyme Time, and N-Back.",
+    'patternmap': 'PatternMap app showing a dark node graph of biblical patterns — glowing circles such as The Bronze Serpent, Melchizedek, and Sabbath Rest linked by threads, with category filter chips.'
+  };
+
+  // HOMELAB plaque: the forge schematic SVG, inlined verbatim as markup
+  // (never fetched at runtime) so its JetBrains Mono labels inherit the
+  // page's own @font-face — an <img src=*.svg> renders in an isolated
+  // context that can't see this document's fonts or its --gold/--text-dim
+  // tokens. Classes are namespaced hl- so they can never collide with a
+  // page-level class of the same short name.
+  // Source of truth: assets/homelab-schematic.svg (kept on disk too, in
+  // case a static fallback is ever needed).
+  var HOMELAB_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Homelab forge schematic: hypervisor running twenty containerized services, connected to storage, backups, and a mesh VPN.">' +
+    '<title>Homelab forge schematic</title>' +
+    '<style>' +
+    '.hl-blk{fill:none;stroke:var(--gold);stroke-width:1;}' +
+    '.hl-sq{fill:none;stroke:var(--gold);stroke-width:1;opacity:.7;}' +
+    '.hl-tr{fill:none;stroke:var(--gold);stroke-width:1;opacity:.55;}' +
+    '.hl-mesh{fill:none;stroke:var(--gold);stroke-width:1;opacity:.4;}' +
+    '.hl-dot{fill:var(--gold);opacity:.9;}' +
+    '.hl-gk{fill:none;stroke:var(--gold);stroke-width:1;opacity:.5;}' +
+    '.hl-lbl{font-family:var(--type-mono);fill:var(--text-dim);font-size:11px;letter-spacing:2px;}' +
+    '</style>' +
+    '<g>' +
+    '<path class="hl-gk" transform="translate(14,14)" d="M0,18 L0,0 L34,0 L34,6 L10,6 L10,12 L28,12 L28,18"/>' +
+    '<path class="hl-gk" transform="translate(886,14) scale(-1,1)" d="M0,18 L0,0 L34,0 L34,6 L10,6 L10,12 L28,12 L28,18"/>' +
+    '<path class="hl-gk" transform="translate(14,526) scale(1,-1)" d="M0,18 L0,0 L34,0 L34,6 L10,6 L10,12 L28,12 L28,18"/>' +
+    '<path class="hl-gk" transform="translate(886,526) scale(-1,-1)" d="M0,18 L0,0 L34,0 L34,6 L10,6 L10,12 L28,12 L28,18"/>' +
+    '</g>' +
+    '<rect class="hl-blk" x="80" y="60" width="460" height="200"/>' +
+    '<text class="hl-lbl" x="100" y="84">HYPERVISOR</text>' +
+    '<g>' +
+    '<rect class="hl-sq" x="226" y="100" width="24" height="24"/><rect class="hl-sq" x="262" y="100" width="24" height="24"/><rect class="hl-sq" x="298" y="100" width="24" height="24"/><rect class="hl-sq" x="334" y="100" width="24" height="24"/><rect class="hl-sq" x="370" y="100" width="24" height="24"/>' +
+    '<rect class="hl-sq" x="226" y="136" width="24" height="24"/><rect class="hl-sq" x="262" y="136" width="24" height="24"/><rect class="hl-sq" x="298" y="136" width="24" height="24"/><rect class="hl-sq" x="334" y="136" width="24" height="24"/><rect class="hl-sq" x="370" y="136" width="24" height="24"/>' +
+    '<rect class="hl-sq" x="226" y="172" width="24" height="24"/><rect class="hl-sq" x="262" y="172" width="24" height="24"/><rect class="hl-sq" x="298" y="172" width="24" height="24"/><rect class="hl-sq" x="334" y="172" width="24" height="24"/><rect class="hl-sq" x="370" y="172" width="24" height="24"/>' +
+    '<rect class="hl-sq" x="226" y="208" width="24" height="24"/><rect class="hl-sq" x="262" y="208" width="24" height="24"/><rect class="hl-sq" x="298" y="208" width="24" height="24"/><rect class="hl-sq" x="334" y="208" width="24" height="24"/><rect class="hl-sq" x="370" y="208" width="24" height="24"/>' +
+    '</g>' +
+    '<text class="hl-lbl" x="310" y="250" text-anchor="middle">SERVICES ×20</text>' +
+    '<rect class="hl-blk" x="600" y="60" width="220" height="200"/>' +
+    '<g class="hl-mesh">' +
+    '<line x1="710" y1="155" x2="710" y2="110"/>' +
+    '<line x1="710" y1="155" x2="710" y2="200"/>' +
+    '<line x1="710" y1="155" x2="655" y2="155"/>' +
+    '<line x1="710" y1="155" x2="765" y2="155"/>' +
+    '<line x1="710" y1="110" x2="765" y2="155"/>' +
+    '<line x1="765" y1="155" x2="710" y2="200"/>' +
+    '<line x1="710" y1="200" x2="655" y2="155"/>' +
+    '<line x1="655" y1="155" x2="710" y2="110"/>' +
+    '</g>' +
+    '<circle class="hl-dot" cx="710" cy="155" r="2.2"/>' +
+    '<circle class="hl-dot" cx="710" cy="110" r="2"/>' +
+    '<circle class="hl-dot" cx="710" cy="200" r="2"/>' +
+    '<circle class="hl-dot" cx="655" cy="155" r="2"/>' +
+    '<circle class="hl-dot" cx="765" cy="155" r="2"/>' +
+    '<text class="hl-lbl" x="710" y="250" text-anchor="middle">MESH VPN</text>' +
+    '<rect class="hl-blk" x="80" y="380" width="200" height="100"/>' +
+    '<text class="hl-lbl" x="180" y="434" text-anchor="middle">STORAGE</text>' +
+    '<rect class="hl-blk" x="620" y="380" width="200" height="100"/>' +
+    '<text class="hl-lbl" x="720" y="434" text-anchor="middle">BACKUPS</text>' +
+    '<polyline class="hl-tr" points="150,260 150,330 180,330 180,380"/>' +
+    '<circle class="hl-dot" cx="150" cy="260" r="2"/><circle class="hl-dot" cx="150" cy="330" r="2"/><circle class="hl-dot" cx="180" cy="330" r="2"/><circle class="hl-dot" cx="180" cy="380" r="2"/>' +
+    '<polyline class="hl-tr" points="470,260 470,330 720,330 720,380"/>' +
+    '<circle class="hl-dot" cx="470" cy="260" r="2"/><circle class="hl-dot" cx="470" cy="330" r="2"/><circle class="hl-dot" cx="720" cy="330" r="2"/><circle class="hl-dot" cx="720" cy="380" r="2"/>' +
+    '<polyline class="hl-tr" points="540,140 570,140 570,155 600,155"/>' +
+    '<circle class="hl-dot" cx="540" cy="140" r="2"/><circle class="hl-dot" cx="570" cy="140" r="2"/><circle class="hl-dot" cx="570" cy="155" r="2"/><circle class="hl-dot" cx="600" cy="155" r="2"/>' +
+    '<polyline class="hl-tr" points="780,380 780,320 800,320 800,260"/>' +
+    '<circle class="hl-dot" cx="780" cy="380" r="2"/><circle class="hl-dot" cx="780" cy="320" r="2"/><circle class="hl-dot" cx="800" cy="320" r="2"/><circle class="hl-dot" cx="800" cy="260" r="2"/>' +
+    '</svg>';
+
+  // ===== MODULE: render — builds plaques / maker / ledger DOM from arrays =====
+  function tickSpans(){
+    var frag = document.createDocumentFragment();
+    ['tl','tr','bl','br'].forEach(function(pos){
+      var s = document.createElement('span');
+      s.className = 'tick tick-' + pos;
+      s.setAttribute('aria-hidden', 'true');
+      frag.appendChild(s);
+    });
+    return frag;
+  }
+
+  function renderWorks(){
+    var container = document.getElementById('worksList');
+    if(!container) return;
+    WORKS.forEach(function(w){
+      var article = document.createElement('article');
+      article.className = 'plaque reveal';
+      article.id = w.id;
+      article.appendChild(tickSpans());
+
+      var kicker = document.createElement('p');
+      kicker.className = 'plaque-kicker kicker';
+      kicker.textContent = w.kicker;
+      article.appendChild(kicker);
+
+      var title = document.createElement('h3');
+      title.className = 'plaque-title struck-metal';
+      title.textContent = w.title;
+      article.appendChild(title);
+
+      var line = document.createElement('p');
+      line.className = 'plaque-line';
+      line.textContent = w.line;
+      article.appendChild(line);
+
+      if(w.id === 'homelab'){
+        var chips = document.createElement('div');
+        chips.className = 'plaque-chips';
+        ['24/7','20+ SERVICES','SELF-HOSTED'].forEach(function(c){
+          var chip = document.createElement('span');
+          chip.className = 'plaque-chip';
+          chip.textContent = c;
+          chips.appendChild(chip);
+        });
+        article.appendChild(chips);
+      }
+
+      var media = document.createElement('div');
+      media.className = 'media-slot media-slot--' + w.id;
+      media.setAttribute('data-visual', w.visual);
+      // NOTE: no blanket aria-hidden on the wrapper — hardcoding it true
+      // (as when this was an empty placeholder div) would hide the
+      // screenshots' alt text, the vignette's real link, and the
+      // schematic's role="img" from assistive tech alike.
+      // Each branch below hides only the decorative piece of itself.
+
+      if(w.visual === 'vignette'){
+        // FIRMAMENT: a live 2D-canvas galaxy vignette (see vignette()
+        // module) with its own overlay action link — an override of
+        // the general "visual, then action below it" plaque template.
+        var canvas = document.createElement('canvas');
+        canvas.className = 'vignette-canvas';
+        canvas.id = 'firmamentVignette';
+        canvas.setAttribute('aria-hidden', 'true'); // decorative; the overlay link below carries the meaning
+        media.appendChild(canvas);
+
+        var enter = document.createElement('a');
+        enter.className = 'plaque-action vignette-action';
+        enter.href = w.href;
+        enter.textContent = 'Enter Firmament →';
+        if(/^https?:\/\//i.test(w.href)){
+          enter.target = '_blank';
+          enter.rel = 'noopener noreferrer';
+        }
+        media.appendChild(enter);
+      } else if(w.visual === 'schematic'){
+        // HOMELAB: the inlined schematic SVG IS the content — it carries
+        // its own role="img" + aria-label, so the wrapper stays unhidden.
+        var svgWrap = document.createElement('div');
+        svgWrap.className = 'homelab-schematic-wrap';
+        svgWrap.innerHTML = HOMELAB_SVG;
+        media.appendChild(svgWrap);
+      } else {
+        // MUSTER / SPARKS / PATTERNMAP / VETERAN FINDER / BOILERPLATE / FAITH: the screenshot + its Ken Burns
+        // (pure CSS animation — see .plaque-shot rules).
+        var img = document.createElement('img');
+        img.className = 'plaque-shot';
+        img.src = w.visual;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.width = 1400;
+        img.height = 900;
+        img.alt = SHOT_ALT[w.id] || w.title;
+        media.appendChild(img);
+      }
+      article.appendChild(media);
+
+      // Standard "ENTER →" action below the visual — every plaque except
+      // FIRMAMENT (its action is the vignette's own overlay link, above)
+      // and HOMELAB (no action link — the schematic IS the content; a
+      // dead/dimmed pseudo-link would be misleading).
+      if(w.visual !== 'vignette' && w.id !== 'homelab' && w.href){
+        var a = document.createElement('a');
+        a.className = 'plaque-action';
+        a.href = w.href;
+        a.textContent = 'Enter →';
+        if(/^https?:\/\//i.test(w.href)){
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+        }
+        article.appendChild(a);
+      }
+
+      container.appendChild(article);
+    });
+  }
+
+  function renderMaker(){
+    // The flame (strengths) is built separately by makerFlame() — it needs
+    // real layout geometry (getBoundingClientRect-adjacent % positioning),
+    // so it runs after this DOM is attached. See MODULE: makerFlame below.
+
+    var gaugesEl = document.getElementById('gaugesList');
+    if(gaugesEl){
+      GAUGES.forEach(function(g){
+        var li = document.createElement('li');
+        li.className = 'gauge-item';
+        // gaugesMotion() reads these three back out on scroll-into-view:
+        // heat-up 0 → value over 1.2s ease-out + count-up.
+        li.setAttribute('data-value', g.value);
+        li.setAttribute('data-value-label', g.valueLabel);
+        li.setAttribute('data-suffix', /percentile/i.test(g.valueLabel) ? 'percentile' : 'plain');
+
+        var head = document.createElement('div');
+        head.className = 'gauge-head';
+        var name = document.createElement('span');
+        name.className = 'gauge-name';
+        name.textContent = g.name;
+        var value = document.createElement('span');
+        value.className = 'gauge-value';
+        value.textContent = '0';
+        head.appendChild(name);
+        head.appendChild(value);
+
+        var track = document.createElement('div');
+        track.className = 'gauge-track';
+        var fill = document.createElement('div');
+        fill.className = 'gauge-fill'; // starts at width:0 (CSS); gaugesMotion() heats it up
+        var tip = document.createElement('span');
+        tip.className = 'gauge-fill-tip';
+        tip.setAttribute('aria-hidden', 'true');
+        fill.appendChild(tip);
+        track.appendChild(fill);
+
+        var proof = document.createElement('p');
+        proof.className = 'gauge-proof';
+        proof.textContent = g.proof;
+
+        var source = document.createElement('p');
+        source.className = 'gauge-source';
+        source.textContent = g.source;
+
+        li.appendChild(head);
+        li.appendChild(track);
+        li.appendChild(proof);
+        li.appendChild(source);
+        gaugesEl.appendChild(li);
+      });
+    }
+
+    var hollandEl = document.getElementById('hollandChip');
+    if(hollandEl) hollandEl.textContent = HOLLAND_CHIP;
+  }
+
+  // ===== MODULE: makerFlame (the flame, enlarged) =====
+  function makerFlame(){
+    var wrap = document.getElementById('makerFlameWrap');
+    var svg = document.getElementById('makerFlameSvg');
+    var starsHost = document.getElementById('makerFlameStars');
+    if(!wrap || !svg || !starsHost) return;
+
+    // Deviation: see the CSS comment above .maker-flame-wrap for the full
+    // rationale. In short — CONSTELLATION.flame's baked-in strength-N roles
+    // cluster in the tip's 47-unit band; reassigned here to 5 points spread
+    // the flame's full height so each callout has room. IDEATION keeps the
+    // true tip (f5), preserving "brightest/highest" prominence order. This
+    // mapping is local to the Maker section only — the sky's flame is
+    // unaffected (it treats the whole cluster as one target).
+    var ROLE_MAP = {
+      'strength-1':'f5',  // IDEATION      — tip, y 42.83  (was f9)
+      'strength-2':'f3',  // INTELLECTION  — y 81.58        (unchanged)
+      'strength-3':'f8',  // COMPETITION   — y 117.75       (was f4)
+      'strength-4':'f1',  // ADAPTABILITY  — y 141.0        (was f10)
+      'strength-5':'f7'   // RELATOR       — y 146.17       (was f5)
+    };
+    var SIDE_MAP = {
+      'strength-1':'left', 'strength-2':'right', 'strength-3':'left',
+      'strength-4':'left', 'strength-5':'right'
+    };
+
+    var pts = CONSTELLATION.flame;
+    var byId = {};
+    pts.forEach(function(p){ byId[p.id] = p; });
+    var threads = CONSTELLATION.threads.filter(function(t){
+      return t[0].charAt(0) === 'f' && t[1].charAt(0) === 'f';
+    });
+
+    var PAD = 18;
+    var xs = pts.map(function(p){ return p.x; });
+    var ys = pts.map(function(p){ return p.y; });
+    var minX = Math.min.apply(null, xs) - PAD, maxX = Math.max.apply(null, xs) + PAD;
+    var minY = Math.min.apply(null, ys) - PAD, maxY = Math.max.apply(null, ys) + PAD;
+    var vbW = maxX - minX, vbH = maxY - minY;
+    svg.setAttribute('viewBox', minX + ' ' + minY + ' ' + vbW + ' ' + vbH);
+    wrap.style.aspectRatio = vbW + ' / ' + vbH;
+
+    var NS = 'http://www.w3.org/2000/svg';
+    function svgEl(tag, attrs){
+      var e = document.createElementNS(NS, tag);
+      for(var k in attrs) e.setAttribute(k, attrs[k]);
+      return e;
+    }
+
+    threads.forEach(function(t){
+      var a = byId[t[0]], b = byId[t[1]];
+      if(!a || !b) return;
+      svg.appendChild(svgEl('line', { class:'mf-thread', x1:a.x, y1:a.y, x2:b.x, y2:b.y }));
+    });
+
+    var anchorFids = {};
+    Object.keys(ROLE_MAP).forEach(function(k){ anchorFids[ROLE_MAP[k]] = true; });
+    pts.forEach(function(p){
+      var anchor = !!anchorFids[p.id];
+      svg.appendChild(svgEl('circle', {
+        class:'mf-dot', cx:p.x, cy:p.y,
+        r: anchor ? 2.4 : 1.6,
+        opacity: anchor ? 0.6 : 0.4
+      }));
+    });
+
+    var buttons = [];
+    STRENGTHS.forEach(function(strength, idx){
+      var fid = ROLE_MAP[strength.star];
+      var p = byId[fid];
+      if(!p) return;
+      var leftPct = (p.x - minX) / vbW * 100;
+      var topPct = (p.y - minY) / vbH * 100;
+      var rankOp = (1.1 - idx * 0.15).toFixed(2); // rank1 brightest → rank5 dimmest at rest
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'flame-star';
+      btn.style.left = leftPct.toFixed(2) + '%';
+      btn.style.top = topPct.toFixed(2) + '%';
+      btn.style.setProperty('--rank-op', rankOp);
+      btn.setAttribute('data-idx', idx);
+      var titleCase = strength.name.charAt(0) + strength.name.slice(1).toLowerCase();
+      btn.setAttribute('aria-label', titleCase + ': ' + strength.line);
+
+      var halo = document.createElement('span');
+      halo.className = 'flame-star-halo';
+      halo.setAttribute('aria-hidden', 'true');
+      var dot = document.createElement('span');
+      dot.className = 'flame-star-dot';
+      dot.setAttribute('aria-hidden', 'true');
+
+      var callout = document.createElement('span');
+      callout.className = 'flame-star-callout side-' + SIDE_MAP[strength.star];
+      callout.setAttribute('aria-hidden', 'true');
+      var nameEl = document.createElement('span');
+      nameEl.className = 'flame-star-callout-name';
+      nameEl.textContent = strength.name;
+      var lineEl = document.createElement('span');
+      lineEl.className = 'flame-star-callout-line';
+      lineEl.textContent = strength.line;
+      callout.appendChild(nameEl);
+      callout.appendChild(lineEl);
+
+      btn.appendChild(halo);
+      btn.appendChild(dot);
+      btn.appendChild(callout);
+      starsHost.appendChild(btn);
+      buttons.push(btn);
+    });
+
+    // Default state: IDEATION (rank 1 / idx 0) shown. Hover/focus previews
+    // any star; leaving it reverts to whichever is "locked" (default, or
+    // the last clicked/Enter-toggled star). Click/Enter on the locked star
+    // toggles it back to the default — real toggle semantics, not just a
+    // one-way select. Exactly one star is ever `.is-active`.
+    var lockedIdx = 0;
+    function show(idx){
+      buttons.forEach(function(b, i){ b.classList.toggle('is-active', i === idx); });
+    }
+    show(lockedIdx);
+
+    buttons.forEach(function(btn, i){
+      btn.addEventListener('mouseenter', function(){ show(i); });
+      btn.addEventListener('focus', function(){ show(i); });
+      btn.addEventListener('mouseleave', function(){ show(lockedIdx); });
+      btn.addEventListener('blur', function(){ show(lockedIdx); });
+      btn.addEventListener('click', function(){
+        lockedIdx = (lockedIdx === i) ? 0 : i;
+        show(lockedIdx);
+      });
+    });
+  }
+
+  function renderLedger(){
+    var body = document.getElementById('ledgerBody');
+    if(!body) return;
+    LEDGER.forEach(function(row, i){
+      var tr = document.createElement('tr');
+      tr.className = 'reveal-row';
+      tr.style.transitionDelay = (i * 60) + 'ms';
+      row.forEach(function(cell){
+        var td = document.createElement('td');
+        td.textContent = cell;
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    var close = document.createElement('tr');
+    close.className = 'ledger-close reveal-row';
+    close.style.transitionDelay = (LEDGER.length * 60) + 'ms';
+    var td = document.createElement('td');
+    td.colSpan = 3;
+    td.textContent = '…and the private forge holds dozens more.';
+    close.appendChild(td);
+    body.appendChild(close);
+  }
+
+  // ===== MODULE: reveal (section fade-up — IntersectionObserver at 20%) =====
+  function reveal(){
+    var items = document.querySelectorAll('.reveal, .reveal-row');
+    if(!items.length) return;
+    if(REDUCED_MOTION){
+      items.forEach(function(el){ el.classList.add('is-visible'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold:0.2 });
+    items.forEach(function(el){ io.observe(el); });
+  }
+
+  // ===== MODULE: field (ambient starfield canvas) =====
+  function field(){
+    var canvas = document.getElementById('skyField');
+    var sky = document.getElementById('sky');
+    if(!canvas || !sky || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var W = 0, H = 0, stars = [];
+    var N = 260, DRIFT_N = 8;
+
+    function resize(){
+      var rect = sky.getBoundingClientRect();
+      W = rect.width; H = rect.height;
+      canvas.width = Math.max(1, Math.round(W * DPR));
+      canvas.height = Math.max(1, Math.round(H * DPR));
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    function makeStars(){
+      stars = [];
+      for(var i = 0; i < N; i++){
+        stars.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: 0.5 + Math.random() * 1.3,
+          baseA: 0.20 + Math.random() * 0.50,
+          period: 3000 + Math.random() * 6000,
+          phase: Math.random() * Math.PI * 2,
+          drift: i < DRIFT_N,
+          vx: (Math.random() - 0.5) * 0.006,
+          vy: (Math.random() - 0.5) * 0.006
+        });
+      }
+    }
+    function draw(t){
+      ctx.clearRect(0, 0, W, H);
+      for(var i = 0; i < stars.length; i++){
+        var s = stars[i];
+        if(s.drift && !REDUCED_MOTION){
+          s.x += s.vx; s.y += s.vy;
+          if(s.x < 0) s.x += W; if(s.x > W) s.x -= W;
+          if(s.y < 0) s.y += H; if(s.y > H) s.y -= H;
+        }
+        var tw = REDUCED_MOTION ? 1 : (0.72 + 0.28 * Math.sin((t / s.period) * Math.PI * 2 + s.phase));
+        var a = Math.max(0, Math.min(1, s.baseA * tw));
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(237,230,216,' + a.toFixed(3) + ')'; /* --star */
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    resize();
+    makeStars();
+    draw(0);
+
+    if(REDUCED_MOTION){
+      canvas.classList.add('is-visible');
+      window.addEventListener('resize', function(){ resize(); makeStars(); draw(0); });
+      return; // static single paint — no rAF loop, no observers needed
+    }
+
+    var running = false, rafId = null, skyVisible = true, pageVisible = !document.hidden;
+    function loop(t){
+      draw(t);
+      if(running) rafId = requestAnimationFrame(loop);
+    }
+    function start(){
+      if(running) return;
+      running = true;
+      rafId = requestAnimationFrame(loop);
+    }
+    function stop(){
+      running = false;
+      if(rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    function sync(){ if(skyVisible && pageVisible) start(); else stop(); }
+
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){ skyVisible = entry.isIntersecting; });
+      sync();
+    }, { threshold: 0 });
+    io.observe(sky);
+    document.addEventListener('visibilitychange', function(){
+      pageVisible = !document.hidden;
+      sync();
+    });
+    window.addEventListener('resize', function(){ resize(); makeStars(); draw(0); });
+
+    sync();
+    // weld step 2 (0.6–2.4s): the ambient field fades up behind the drifting stars.
+    setTimeout(function(){ canvas.classList.add('is-visible'); }, 600);
+  }
+
+  // ===== MODULE: travel (shared smooth-scroll + focus landing) =====
+  // Module-scope (not nested in constellation()) so both the sky's stars AND
+  // the mini-map's stars/links (spy()) call the exact same travel path —
+  // literal code reuse, not just conceptual reuse.
+  function easeInOutCubic(t){ return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  // NOTE: getBoundingClientRect().top reads the element's PAINTED position,
+  // which on a first visit still carries the .reveal pre-state
+  // `transform:translateY(24px)` (target sections/plaques haven't scrolled
+  // into the IntersectionObserver's 20% threshold yet, so they haven't been
+  // marked .is-visible) — that 24px paint-time offset would land travel 24px
+  // off its final resting spot. offsetTop is a pure LAYOUT measurement
+  // (unaffected by the element's own `transform`, which is a paint-only
+  // property), so summing offsetTop up the offsetParent chain gives the
+  // document-absolute position the section will occupy once fully revealed,
+  // on first visit or any later one alike.
+  function absoluteTop(el){
+    var top = 0;
+    while(el){
+      top += el.offsetTop || 0;
+      el = el.offsetParent;
+    }
+    return top;
+  }
+  function smoothScrollTo(targetEl, duration){
+    var startY = window.pageYOffset;
+    var endY = absoluteTop(targetEl);
+    var dist = endY - startY;
+    var startT = null;
+    function step(ts){
+      if(startT === null) startT = ts;
+      var p = Math.min(1, (ts - startT) / duration);
+      window.scrollTo(0, startY + dist * easeInOutCubic(p));
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  // Travel polish: focus moves to the destination section after travel
+  // (tabindex="-1" + focus()) — keyboard/screen-reader users get a real,
+  // announced landing, not just a silent visual scroll. tabindex="-1" is
+  // added once and left in place; it only makes the element programmatically
+  // focusable and never inserts it into the natural Tab order.
+  function focusLanding(targetEl){
+    if(!targetEl.hasAttribute('tabindex')) targetEl.setAttribute('tabindex', '-1');
+    targetEl.focus({ preventScroll:true });
+  }
+  function travelTo(targetId, duration){
+    var targetSection = document.getElementById(targetId);
+    if(!targetSection) return;
+    if(REDUCED_MOTION){
+      // reduced-motion: instant jump.
+      targetSection.scrollIntoView({ block:'start' });
+      focusLanding(targetSection);
+      return;
+    }
+    duration = duration || 900;
+    smoothScrollTo(targetSection, duration);
+    setTimeout(function(){ focusLanding(targetSection); }, duration + 30);
+  }
+
+  // ===== MODULE: constellation (SVG build + weld-in + ignite-travel) =====
+  function constellation(){
+    var svg = document.getElementById('constellation');
+    var skyEl = document.getElementById('sky');
+    var hookLine = document.getElementById('hookLine');
+    var nameBlock = document.getElementById('nameBlock');
+    var scrollCue = document.getElementById('scrollCue');
+    if(!svg) return;
+
+    var SVGNS = 'http://www.w3.org/2000/svg';
+    function el(tag, attrs){
+      var e = document.createElementNS(SVGNS, tag);
+      for(var k in attrs){ e.setAttribute(k, attrs[k]); }
+      return e;
+    }
+
+    // ---- index all points, compute a padded viewBox that frames the composition ----
+    var byId = {};
+    var allPts = [];
+    CONSTELLATION.anvil.forEach(function(p){ p.group = 'anvil'; byId[p.id] = p; allPts.push(p); });
+    CONSTELLATION.flame.forEach(function(p){ p.group = 'flame'; byId[p.id] = p; allPts.push(p); });
+
+    var xs = allPts.map(function(p){ return p.x; });
+    var ys = allPts.map(function(p){ return p.y; });
+    var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+    var minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
+    var padX = (maxX - minX) * 0.18 + 30;
+    var padY = (maxY - minY) * 0.18 + 40;
+    var vb = {
+      x: minX - padX, y: minY - padY,
+      w: (maxX - minX) + padX * 2, h: (maxY - minY) + padY * 2
+    };
+    svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+
+    // ---- WORKS / STRENGTHS role lookups ----
+    var workByStar = {};
+    WORKS.forEach(function(w){ if(w.star) workByStar[w.star] = w; });
+
+    // ---- defs: radial gradients for star halos ----
+    var defs = el('defs', {});
+    // NOTE: at the small radii used here (10–14px halo), a purely LINEAR
+    // 90%→0% opacity fade is nearly imperceptible on a near-black field —
+    // only r≈20+ reads clearly with a linear fade. A steeper near-center
+    // falloff (extra mid-stop) keeps the identical 10/14px footprint but
+    // makes the star actually read as a lit point, not fog.
+    // (A separate, now-fixed bug — see .star-drift's CSS note — made these
+    // gradients paint as invisible regardless of stop values; var(--token)
+    // in the stop-color attribute is fine now that's fixed.)
+    var goldHalo = el('radialGradient', { id:'haloGold', cx:'50%', cy:'50%', r:'50%' });
+    goldHalo.appendChild(el('stop', { offset:'0%', 'stop-color':'var(--white-hot)', 'stop-opacity':'1' }));
+    goldHalo.appendChild(el('stop', { offset:'30%', 'stop-color':'var(--gold-bright)', 'stop-opacity':'0.85' }));
+    goldHalo.appendChild(el('stop', { offset:'100%', 'stop-color':'var(--gold-bright)', 'stop-opacity':'0' }));
+    var flameHalo = el('radialGradient', { id:'haloFlame', cx:'50%', cy:'50%', r:'50%' });
+    flameHalo.appendChild(el('stop', { offset:'0%', 'stop-color':'var(--white-hot)', 'stop-opacity':'1' }));
+    flameHalo.appendChild(el('stop', { offset:'30%', 'stop-color':'var(--flame)', 'stop-opacity':'0.85' }));
+    flameHalo.appendChild(el('stop', { offset:'100%', 'stop-color':'var(--flame)', 'stop-opacity':'0' }));
+    defs.appendChild(goldHalo); defs.appendChild(flameHalo);
+    // NOTE: the cross-flare arms were flat-fill rects — hard mechanical
+    // plus-lines with a uniform 0.55 opacity end to end. objectBoundingBox
+    // gradients (each rect's own local 0..1 span, so one pair of defs covers
+    // every cross-flare star) fade white-hot at the center out to fully
+    // transparent at each tip — a soft lens-flare taper instead of a ruler
+    // line — while the arm LENGTH (haloR*2.2, set where the rects are
+    // built) stays unchanged, already within the <=2.5x-halo-radius bound.
+    var flareH = el('linearGradient', { id:'crossFlareH', x1:'0%', y1:'0%', x2:'100%', y2:'0%' });
+    [['0%','0'], ['50%','1'], ['100%','0']].forEach(function(s){
+      flareH.appendChild(el('stop', { offset:s[0], 'stop-color':'var(--white-hot)', 'stop-opacity':s[1] }));
+    });
+    var flareV = el('linearGradient', { id:'crossFlareV', x1:'0%', y1:'0%', x2:'0%', y2:'100%' });
+    [['0%','0'], ['50%','1'], ['100%','0']].forEach(function(s){
+      flareV.appendChild(el('stop', { offset:s[0], 'stop-color':'var(--white-hot)', 'stop-opacity':s[1] }));
+    });
+    defs.appendChild(flareH); defs.appendChild(flareV);
+    svg.appendChild(defs);
+
+    // ---- fuse-path helpers (ignite-then-travel) — defined before any star build
+    // code below calls them, since a `var` assignment (unlike a function
+    // declaration) is NOT hoisted: calling fusePathFor() before this line ran
+    // would read RING as undefined. ----
+    var RING = ['a0','a1','a2','a3','a4','a5','a6','a7','a8','a9','a10','a11'];
+    function ringPath(fromId, toId){
+      var i = RING.indexOf(fromId), j = RING.indexOf(toId);
+      if(i < 0 || j < 0) return [fromId, toId];
+      var n = RING.length, fwd = [], k = i;
+      while(k !== j){ fwd.push(RING[k]); k = (k + 1) % n; }
+      fwd.push(RING[j]);
+      var bwd = [], k2 = i;
+      while(k2 !== j){ bwd.push(RING[k2]); k2 = (k2 - 1 + n) % n; }
+      bwd.push(RING[j]);
+      return fwd.length <= bwd.length ? fwd : bwd;
+    }
+    function fusePathFor(role){
+      var target = CONSTELLATION.anvil.filter(function(p){ return p.role === role; })[0];
+      if(!target) return { segments:[], useConnector:false };
+      var ring = ringPath('a1', target.id);
+      var ids = ['f0'].concat(ring);
+      var segs = [];
+      for(var i = 0; i < ids.length - 1; i++){ segs.push([ids[i], ids[i + 1]]); }
+      return { segments: segs, useConnector: true };
+    }
+    function fuseChainSelfFlame(){
+      var chain = ['f0', 'f1', 'f2', 'f3', 'f4', 'f5'];
+      var segs = [];
+      for(var i = 0; i < chain.length - 1; i++){ segs.push([chain[i], chain[i + 1]]); }
+      return { segments: segs, useConnector: false };
+    }
+
+    // ---- scattered start positions for the drift-in (deterministic-ish spread) ----
+    function scatterFor(p, i){
+      var ang = (i * 47) % 360 * Math.PI / 180;
+      var dist = 90 + (i * 37) % 140;
+      return { dx: Math.cos(ang) * dist, dy: Math.sin(ang) * dist - 40 };
+    }
+
+    // ---- threads: draw first so stars sit on top ----
+    var threadEls = {}; // 'a|b' (both orders) -> {main, underglow}
+    var threadsGroup = el('g', { 'aria-hidden':'true' });
+    svg.appendChild(threadsGroup);
+    var starCount = allPts.length;
+    CONSTELLATION.threads.forEach(function(pair, i){
+      var a = byId[pair[0]], b = byId[pair[1]];
+      if(!a || !b) return;
+      var glow = el('line', { class:'thread-underglow', x1:a.x, y1:a.y, x2:b.x, y2:b.y });
+      var main = el('line', { class:'thread-main', x1:a.x, y1:a.y, x2:b.x, y2:b.y });
+      // NOTE: a straight <line>'s total length is just the Euclidean
+      // distance between its endpoints — computing it with Math.hypot()
+      // instead of main.getTotalLength() means NO forced synchronous
+      // layout/style flush ever happens on these elements. Calling
+      // getTotalLength() AFTER the <line> was already appended into the
+      // live, transition-bearing SVG but BEFORE strokeDashoffset was set
+      // would force a flush that commits the browser-default "fully drawn"
+      // state as the CSS transition's start point, so the very next line
+      // (setting dashoffset=len) would animate the thread backwards —
+      // drawn → hidden — over the class's 500ms transition, in full public
+      // view, on every load. Setting the dasharray/dashoffset styles below
+      // BEFORE appendChild closes it a second way: these elements'
+      // first-ever committed style, the instant they connect to the
+      // document, is already the hidden state, so there is no intermediate
+      // frame left for any transition to key off.
+      var len = REDUCED_MOTION ? 0 : Math.hypot(b.x - a.x, b.y - a.y);
+      if(!REDUCED_MOTION){
+        [glow, main].forEach(function(ln){
+          ln.style.strokeDasharray = len;
+          ln.style.strokeDashoffset = len;
+        });
+      }
+      threadsGroup.appendChild(glow);
+      threadsGroup.appendChild(main);
+      threadEls[pair[0] + '|' + pair[1]] = { main: main, underglow: glow };
+      threadEls[pair[1] + '|' + pair[0]] = { main: main, underglow: glow };
+    });
+
+    // one synthetic connector (flame anchor f0 → anvil face a1) used ONLY for the
+    // ignite-then-travel fuse re-trace — not part of the static welded chart, so it
+    // stays invisible (opacity 0) except during the 350ms fuse flash.
+    var fA = byId['f0'], fB = byId['a1'];
+    var fuseConnector = el('line', {
+      class:'fuse-connector', x1:fA.x, y1:fA.y, x2:fB.x, y2:fB.y, 'aria-hidden':'true'
+    });
+    svg.appendChild(fuseConnector);
+
+    // ---- stars group ----
+    var starsGroup = el('g', {});
+    svg.appendChild(starsGroup);
+
+    var flameStarEls = []; // {core}
+    var starWraps = []; // for weld stagger
+
+    function buildStar(p, opts){
+      opts = opts || {};
+      var outer = el('g', { transform: 'translate(' + p.x + ',' + p.y + ')' });
+      var inner = el('g', { class:'star-drift' });
+      var sc = { dx:0, dy:0 };
+      if(!REDUCED_MOTION){
+        sc = scatterFor(p, allPts.indexOf(p));
+        inner.style.transform = 'translate(' + sc.dx.toFixed(1) + 'px,' + sc.dy.toFixed(1) + 'px)';
+        inner.style.opacity = '0';
+      }
+      var haloR = opts.haloR || 10;
+      var coreR = opts.coreR || 2.5;
+      var haloFill = opts.flame ? 'url(#haloFlame)' : 'url(#haloGold)';
+      var coreFill = opts.flame ? 'var(--flame)' : 'var(--white-hot)';
+      var halo = el('circle', { class:'star-halo', r:haloR, fill:haloFill });
+      var core = el('circle', { class: opts.flame ? 'flame-core star-core' : 'star-core', r:coreR, fill:coreFill });
+      inner.appendChild(halo);
+      if(opts.crossFlare){
+        // arm reach stays haloR*2.2 (<=2.5x bound), but each arm now
+        // fades center-to-tip via the gradients above instead of a flat fill.
+        var spike = haloR * 2.2;
+        inner.appendChild(el('rect', { class:'cross-flare', x:-spike, y:-0.5, width:spike * 2, height:1, fill:'url(#crossFlareH)' }));
+        inner.appendChild(el('rect', { class:'cross-flare', x:-0.5, y:-spike, width:1, height:spike * 2, fill:'url(#crossFlareV)' }));
+      }
+      inner.appendChild(core);
+      outer.appendChild(inner);
+      starsGroup.appendChild(outer);
+      starWraps.push({ inner:inner, dx:sc.dx, dy:sc.dy });
+      return { outer:outer, inner:inner, core:core, halo:halo };
+    }
+
+    // Labels live in their OWN group, siblings of (not descendants of) the
+    // interactive star groups. A label's text can be offset well clear of
+    // its star (see labelOffset()); if it stayed INSIDE the focusable
+    // .star-hit <g>, that <g>'s getBoundingClientRect() — the union bbox of
+    // every descendant, hit-area circle AND offset label text alike — would
+    // report a "center" skewed toward the label instead of the actual
+    // clickable star. PATTERNMAP's wide left-anchored label, for example,
+    // pulled its computed center outside its own 18-unit hit-area circle
+    // entirely (elementFromPoint hit bare svg, not the star). Keeping
+    // labels as positioned siblings fixes this for every star, not just
+    // the one with the widest label.
+    var labelsGroup = el('g', { 'aria-hidden':'true' });
+    svg.appendChild(labelsGroup);
+
+    // -- anvil: 5 named work stars + 7 dim structural stars --
+    CONSTELLATION.anvil.forEach(function(p){
+      var w = p.role ? workByStar[p.role] : null;
+      if(w){
+        var isFirmament = (w.id === 'firmament');
+        var star = buildStar(p, { haloR: isFirmament ? 14 : 10, coreR: isFirmament ? 3.2 : 2.5, crossFlare: isFirmament });
+        star.outer.classList.add('star-hit');
+        star.outer.setAttribute('role', 'link');
+        star.outer.setAttribute('tabindex', '0');
+        star.outer.setAttribute('aria-label', 'View ' + w.title);
+        star.outer.setAttribute('data-target', w.id);
+        var hit = el('circle', { r:18, fill:'transparent', class:'star-hit-area' });
+        star.inner.insertBefore(hit, star.inner.firstChild);
+        var lo = labelOffset(p.role);
+        var labelWrap = el('g', { transform: 'translate(' + p.x + ',' + p.y + ')' });
+        var label = el('text', { class:'star-label', x:lo.dx, y:lo.dy, 'text-anchor':lo.anchor });
+        label.textContent = w.title.toUpperCase();
+        labelWrap.appendChild(label);
+        labelsGroup.appendChild(labelWrap);
+        bindStarInteraction(star.outer, w.id, fusePathFor(w.star), label);
+      } else {
+        var dim = buildStar(p, { haloR:6, coreR:1.6 });
+        dim.outer.setAttribute('aria-hidden', 'true');
+        dim.outer.classList.add('star--dim');
+      }
+    });
+
+    function labelOffset(role){
+      switch(role){
+        case 'horn':   return { dx:0,   dy:34, anchor:'middle' }; /* below FIRMAMENT's cross-flare spikes (haloR*2.2 ≈ 31px reach), avoiding overlap */
+        case 'face-l': return { dx:0,   dy:-15, anchor:'middle' };
+        case 'face-r': return { dx:8,   dy:-13, anchor:'start' };
+        case 'waist':  return { dx:-16, dy:5,  anchor:'end' };
+        case 'base':   return { dx:0,   dy:20, anchor:'middle' };
+        case 'boiler':    return { dx:9,   dy:-12, anchor:'start' };
+        case 'vetfinder': return { dx:7,   dy:17,  anchor:'start' };
+        case 'faith':     return { dx:0,   dy:19,  anchor:'middle' };
+        default:       return { dx:0,   dy:-14, anchor:'middle' };
+      }
+    }
+
+    // -- flame: 13 stars, ONE interactive target ("THE MAKER") --
+    var flameOuter = el('g', {
+      class:'star-hit', role:'link', tabindex:'0',
+      'aria-label':'View The Maker', 'data-target':'maker'
+    });
+    starsGroup.appendChild(flameOuter);
+    CONSTELLATION.flame.forEach(function(p){
+      var outer = el('g', { transform: 'translate(' + p.x + ',' + p.y + ')' });
+      var inner = el('g', { class:'star-drift' });
+      var sc = { dx:0, dy:0 };
+      if(!REDUCED_MOTION){
+        sc = scatterFor(p, allPts.indexOf(p));
+        inner.style.transform = 'translate(' + sc.dx.toFixed(1) + 'px,' + sc.dy.toFixed(1) + 'px)';
+        inner.style.opacity = '0';
+      }
+      var halo = el('circle', { class:'star-halo', r:8, fill:'url(#haloFlame)' });
+      var core = el('circle', { class:'flame-core star-core', r:2.2, fill:'var(--flame)' });
+      inner.appendChild(halo); inner.appendChild(core);
+      outer.appendChild(inner);
+      flameOuter.appendChild(outer);
+      starWraps.push({ inner:inner, dx:sc.dx, dy:sc.dy });
+      flameStarEls.push(core);
+    });
+    // generous hit area over the whole flame cluster; label is a sibling in
+    // labelsGroup (see the anvil-loop note above — keeps flameOuter's own
+    // getBoundingClientRect() centered on the actual clickable cluster).
+    var flameCenter = { x:(438), y:(107) };
+    var flameHit = el('circle', { cx:flameCenter.x, cy:flameCenter.y, r:70, fill:'transparent', class:'star-hit-area' });
+    flameOuter.insertBefore(flameHit, flameOuter.firstChild);
+    var flameLabel = el('text', {
+      class:'star-label', x: byId['f5'].x + 6, y: byId['f5'].y - 12, 'text-anchor':'start'
+    });
+    flameLabel.textContent = 'THE MAKER';
+    labelsGroup.appendChild(flameLabel);
+    bindStarInteraction(flameOuter, 'maker', fuseChainSelfFlame(), flameLabel);
+
+    // ---- padded hit areas: keep a real 44px min tap target via padded hit
+    // areas. The hit-area circles above are fixed at a constant SVG-unit
+    // radius, so they scale DOWN 1:1 with the viewBox-to-container ratio
+    // on small viewports (measured 23.3x23.3 CSS px for the four secondary
+    // anvil stars at 390px width — well under the 44px floor). Rather than
+    // hardcode a breakpoint, measure the SVG's actual rendered scale (CSS
+    // px per viewBox unit) and pad every hit circle's radius up to
+    // whatever SVG-unit value currently maps to a 44px CSS diameter; never
+    // shrinks a circle below its authored base radius. Re-runs on resize
+    // (covers rotation / the 640px CSS breakpoint swapping the
+    // constellation's container width).
+    // NOTE: rect.width/vb.w alone over-estimates scale whenever the SVG is
+    // HEIGHT-constrained rather than width-constrained — exactly what
+    // happens at desktop widths, where .sky-constellation's
+    // `width:min(80vw,640px)` fixes the box at 640px but `max-height:58vh`
+    // caps the rendered height below the viewBox's natural aspect ratio.
+    // With the element's own preserveAspectRatio="xMidYMid meet", the
+    // browser then letterboxes: it scales uniformly by the SMALLER of the
+    // width-ratio and height-ratio and centers the content, so the true
+    // on-screen scale is min(width-ratio, height-ratio), not width-ratio
+    // alone. Example at 1440 CSS px: rect=640x522 vs viewBox 529.2x463.75
+    // -> width-ratio 1.2094, height-ratio 1.1256 (the binding one); a
+    // width-only formula sizes hit circles for 1.2094, rendering at an
+    // ACTUAL 42.81 CSS px diameter (under the 44px floor) once the true
+    // 1.1256 scale is applied at paint time.
+    var hitAreaEls = svg.querySelectorAll('.star-hit-area');
+    function sizeHitAreas(){
+      var rect = svg.getBoundingClientRect();
+      if(!rect.width || !rect.height || !vb.w || !vb.h) return;
+      var scale = Math.min(rect.width / vb.w, rect.height / vb.h); // true rendered CSS px per SVG unit under xMidYMid meet
+      // Target 23px (46px diameter), not a bare 22px/44px — a naive 22px
+      // target can render as a sub-pixel-shy 43.9998px diameter, just under
+      // the 44px floor; a 2px margin absorbs that and any browser/zoom
+      // rounding.
+      var minR = 23 / scale; // SVG-unit radius comfortably clearing a 44px CSS diameter
+
+      hitAreaEls.forEach(function(hit){
+        var base = parseFloat(hit.getAttribute('data-base-r'));
+        if(isNaN(base)){
+          base = parseFloat(hit.getAttribute('r'));
+          hit.setAttribute('data-base-r', base);
+        }
+        hit.setAttribute('r', Math.max(base, minR));
+      });
+    }
+    sizeHitAreas();
+    window.addEventListener('resize', sizeHitAreas);
+
+    function fireFuse(pathInfo){
+      var segs = pathInfo.segments;
+      if(pathInfo.useConnector){ fuseConnector.classList.add('is-fusing'); }
+      var lit = [];
+      segs.forEach(function(pair, i){
+        var key = pair[0] + '|' + pair[1];
+        var t = threadEls[key];
+        if(!t) return;
+        var delay = Math.round(i * (220 / Math.max(1, segs.length)));
+        var timer = setTimeout(function(){
+          t.main.classList.add('is-fusing');
+          t.underglow.classList.add('is-fusing');
+        }, delay);
+        lit.push(t);
+      });
+      setTimeout(function(){
+        if(pathInfo.useConnector){ fuseConnector.classList.remove('is-fusing'); }
+        lit.forEach(function(t){
+          t.main.classList.remove('is-fusing');
+          t.underglow.classList.remove('is-fusing');
+        });
+      }, 350);
+    }
+
+    // ---- ignite-then-travel (click / Enter) ----
+    // Travel itself (smooth-scroll + reduced-motion + focus-landing) is the
+    // shared module-level travelTo() (see MODULE: travel, above) — the
+    // mini-map's ignite-then-travel reuses it verbatim.
+    function bindStarInteraction(hitEl, targetId, pathInfo, label){
+      function activate(){
+        var targetSection = document.getElementById(targetId);
+        if(!targetSection) return;
+        if(REDUCED_MOTION){
+          travelTo(targetId);
+          return;
+        }
+        hitEl.classList.add('is-active');
+        var flashEls = hitEl.querySelectorAll('.star-core, .flame-core');
+        flashEls.forEach(function(c){ c.classList.add('is-igniting'); });
+        setTimeout(function(){ flashEls.forEach(function(c){ c.classList.remove('is-igniting'); }); }, 150);
+        setTimeout(function(){ fireFuse(pathInfo); }, 150);
+        setTimeout(function(){
+          travelTo(targetId, 900);
+          setTimeout(function(){ hitEl.classList.remove('is-active'); }, 900);
+        }, 500);
+      }
+      hitEl.addEventListener('click', function(e){ e.preventDefault(); activate(); });
+      hitEl.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
+          e.preventDefault();
+          activate();
+        }
+      });
+      // label lives outside hitEl's subtree (see labelsGroup note) so its
+      // hover/focus brighten is driven directly here, not via CSS descendant.
+      if(label){
+        hitEl.addEventListener('mouseenter', function(){ label.classList.add('is-bright'); });
+        hitEl.addEventListener('mouseleave', function(){ label.classList.remove('is-bright'); });
+        hitEl.addEventListener('focus', function(){ label.classList.add('is-bright'); });
+        hitEl.addEventListener('blur', function(){ label.classList.remove('is-bright'); });
+      }
+    }
+
+    // ---- the weld-in timeline (steps 1–5) ----
+    function weldIn(){
+      if(REDUCED_MOTION){
+        // pre-welded: everything present, static, instantly legible.
+        if(hookLine){ hookLine.classList.add('is-visible', 'is-settled'); }
+        if(nameBlock) nameBlock.classList.add('is-visible');
+        if(scrollCue) scrollCue.classList.add('is-visible');
+        svg.classList.add('labels-visible');
+        return;
+      }
+      // step 1 (0–0.6s): hook line alone in the dark.
+      setTimeout(function(){ if(hookLine) hookLine.classList.add('is-visible'); }, 60);
+      // step 2 (0.6–2.4s): stars drift to their seats, staggered ease-out-expo.
+      // Opacity is popped instantly per-star via setTimeout (not CSS
+      // transition-delay) — see the .star-drift CSS note above: transitioning
+      // opacity here blanks descendant gradient fills.
+      setTimeout(function(){
+        starWraps.forEach(function(item, i){
+          var delay = Math.round(i * (500 / Math.max(1, starWraps.length - 1)));
+          setTimeout(function(){
+            item.inner.style.opacity = '1';
+            item.inner.style.transform = 'translate(0px,0px)';
+          }, delay);
+        });
+      }, 600);
+      // step 3 (2.4–3.0s): threads draw tip-to-tip, spark at each landed joint.
+      setTimeout(function(){
+        var mains = threadsGroup.querySelectorAll('.thread-main');
+        mains.forEach(function(main, i){
+          var glow = main.previousSibling;
+          var delay = Math.round(Math.random() * 8);
+          main.style.transitionDelay = delay + 'ms';
+          if(glow) glow.style.transitionDelay = delay + 'ms';
+          main.style.strokeDashoffset = '0';
+          if(glow) glow.style.strokeDashoffset = '0';
+          main.addEventListener('transitionend', function onEnd(e){
+            if(e.propertyName !== 'stroke-dashoffset') return;
+            main.removeEventListener('transitionend', onEnd);
+            spawnSpark(main.getAttribute('x2'), main.getAttribute('y2'));
+          });
+        });
+      }, 2400);
+      // step 4 (3.0s): labels + name block fade up; hook line migrates up + dims.
+      setTimeout(function(){
+        svg.classList.add('labels-visible');
+        if(nameBlock) nameBlock.classList.add('is-visible');
+        if(hookLine) hookLine.classList.add('is-settled');
+      }, 3000);
+      // step 5: the ▼ DESCEND cue, slightly after the name block.
+      setTimeout(function(){
+        if(scrollCue) scrollCue.classList.add('is-visible');
+      }, 3300);
+    }
+
+    function spawnSpark(x, y){
+      x = parseFloat(x); y = parseFloat(y);
+      var n = 6 + Math.floor(Math.random() * 5);
+      for(var i = 0; i < n; i++){
+        var ang = Math.random() * Math.PI * 2;
+        var dist = 6 + Math.random() * 14;
+        var p = el('circle', {
+          cx:x, cy:y, r: 0.9 + Math.random() * 0.9, fill:'var(--white-hot)', 'aria-hidden':'true'
+        });
+        svg.appendChild(p);
+        if(p.animate){
+          var anim = p.animate([
+            { transform:'translate(0px,0px)', opacity:1, offset:0 },
+            { transform:'translate(' + (Math.cos(ang) * dist).toFixed(1) + 'px,' + (Math.sin(ang) * dist).toFixed(1) + 'px)', opacity:0, offset:1 }
+          ], { duration:300, easing:'ease-out' });
+          anim.onfinish = function(node){ return function(){ node.remove(); }; }(p);
+        } else {
+          setTimeout(function(node){ return function(){ node.remove(); }; }(p), 300);
+        }
+      }
+    }
+
+    weldIn();
+  }
+
+  // ===== MODULE: descent (scroll-driven parallax band) =====
+  function descent(){
+    var band = document.getElementById('descent');
+    if(!band) return;
+
+    var SVGNS = 'http://www.w3.org/2000/svg';
+    function el(tag, attrs){
+      var e = document.createElementNS(SVGNS, tag);
+      for(var k in attrs){ e.setAttribute(k, attrs[k]); }
+      return e;
+    }
+
+    // -- ambient stars: a lightweight SECOND field (not the sky's canvas —
+    // the page caps at one ambient + one vignette canvas; this is a
+    // cheap ~40-point inline SVG, not a canvas) that recedes as you descend --
+    var starsWrap = document.createElement('div');
+    starsWrap.className = 'descent-stars';
+    var starsSvg = el('svg', { viewBox:'0 0 400 260', preserveAspectRatio:'xMidYMin slice', 'aria-hidden':'true', focusable:'false' });
+    for(var i = 0; i < 40; i++){
+      var sx = (Math.random() * 400).toFixed(1);
+      var sy = (Math.random() * 260).toFixed(1);
+      var sr = (0.4 + Math.random() * 1.1).toFixed(2);
+      var sa = (0.15 + Math.random() * 0.4).toFixed(2);
+      starsSvg.appendChild(el('circle', { cx:sx, cy:sy, r:sr, fill:'var(--star)', opacity:sa }));
+    }
+    starsWrap.appendChild(starsSvg);
+    band.appendChild(starsWrap);
+
+    // -- ember horizon (rises from the bottom, intensifies ember-deep→ember) --
+    var horizon = document.createElement('div');
+    horizon.className = 'descent-horizon';
+    band.appendChild(horizon);
+
+    // -- ground silhouette: the render's dark horizon curve, traced as a
+    // gold thread-weight line (ties visually to the constellation motif) --
+    var groundSvg = el('svg', { class:'descent-ground', viewBox:'0 0 1000 80', preserveAspectRatio:'none', 'aria-hidden':'true', focusable:'false' });
+    groundSvg.appendChild(el('path', {
+      d:'M0,55 L70,42 L150,50 L230,30 L320,46 L410,24 L500,44 L590,20 L680,40 L770,28 L860,46 L940,32 L1000,42',
+      fill:'none', stroke:'var(--gold)', 'stroke-width':'1.5', opacity:'0.35'
+    }));
+    band.appendChild(groundSvg);
+
+    // -- mid-descent kicker: "THE WORKS OF HIS HANDS". Decorative echo of
+    // #works' own real "01 · The Works" heading below — aria-hidden so
+    // screen readers meet the real heading once, not this floating twin. --
+    var kickerWrap = document.createElement('div');
+    kickerWrap.className = 'descent-kicker-wrap';
+    kickerWrap.setAttribute('aria-hidden', 'true');
+    var kicker = document.createElement('p');
+    kicker.className = 'descent-kicker kicker';
+    kicker.textContent = 'The works of his hands';
+    kickerWrap.appendChild(kicker);
+    band.appendChild(kickerWrap);
+
+    if(REDUCED_MOTION){
+      // static, legible end-state — no scroll-bound motion at all.
+      starsWrap.style.opacity = '0.3';
+      horizon.style.opacity = '0.55';
+      groundSvg.style.opacity = '1';
+      kicker.style.opacity = '1';
+      return;
+    }
+
+    // -- pure fn of scrollY: band geometry is measured ONCE on load/resize
+    // (never inside the scroll handler — that would cause layout thrash),
+    // then every scroll tick only does arithmetic + transform/opacity
+    // writes, batched to one rAF. --
+    var bandTop = 0, bandHeight = 1;
+    function measure(){
+      bandTop = band.offsetTop;
+      bandHeight = band.offsetHeight || 1;
+    }
+    measure();
+    window.addEventListener('resize', measure);
+
+    function parallaxOffset(local, factor){ return (1 - factor) * local; }
+
+    var ticking = false;
+    function update(){
+      ticking = false;
+      var local = window.pageYOffset - bandTop; // 0 at band's top edge
+      var progress = Math.max(0, Math.min(1, local / bandHeight));
+
+      // ambient stars: translate up at 0.4× scroll speed, fade as they recede
+      starsWrap.style.transform = 'translate3d(0,' + parallaxOffset(local, 0.4).toFixed(1) + 'px,0)';
+      starsWrap.style.opacity = String(Math.max(0, 1 - progress * 1.3));
+
+      // ember horizon: rises from the bottom, intensifies
+      horizon.style.transform = 'translate3d(0,' + ((1 - progress) * 30).toFixed(1) + '%,0)';
+      horizon.style.opacity = String(0.15 + progress * 0.65);
+
+      // ground silhouette: rises into place
+      groundSvg.style.transform = 'translate3d(0,' + ((1 - progress) * 40).toFixed(1) + '%,0)';
+      groundSvg.style.opacity = String(Math.min(1, progress * 1.6));
+
+      // kicker: 0.7× parallax, visible only in the middle third of the band
+      var reveal = 1 - Math.min(1, Math.abs(progress - 0.5) / 0.32);
+      kicker.style.opacity = String(Math.max(0, reveal));
+      kicker.style.transform = 'translate3d(0,' + parallaxOffset(local, 0.7).toFixed(1) + 'px,0)';
+    }
+    function onScroll(){
+      if(!ticking){ ticking = true; requestAnimationFrame(update); }
+    }
+    window.addEventListener('scroll', onScroll, { passive:true });
+    update();
+  }
+
+  // ===== MODULE: vignette (Firmament live canvas vignette) =====
+  // A ~2,200-point 3-spiral-arm scene — a *suggestion* of a galaxy for
+  // the plaque, not the Firmament app embedded. Same offscreen/
+  // document.hidden pause discipline as field() above (max one ambient +
+  // one vignette canvas, both paused when not visible).
+  function vignette(){
+    var canvas = document.getElementById('firmamentVignette');
+    var wrap = canvas ? canvas.closest('.media-slot') : null;
+    if(!canvas || !wrap || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var W = 0, H = 0, scale = 0;
+    var ARMS = 3, N = 2200, points = [];
+    var ROT_SPEED = 0.006; // rad/s
+    var rot = 0;
+    var px = 0, py = 0, tx = 0, ty = 0; // pointer parallax: current / target, clamped ±6px
+    var thread = null, nextThreadAt = 7000 + Math.random() * 1000; // ~7s between threads
+
+    function resize(){
+      var rect = wrap.getBoundingClientRect();
+      W = rect.width; H = rect.height;
+      scale = Math.min(W, H);
+      canvas.width = Math.max(1, Math.round(W * DPR));
+      canvas.height = Math.max(1, Math.round(H * DPR));
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    // Points store fractional polar coords (independent of pixel size) so a
+    // resize never needs to regenerate the field, only the canvas buffer.
+    function makePoints(){
+      points = [];
+      var perArm = Math.round(N / ARMS);
+      for(var a = 0; a < ARMS; a++){
+        var armOffset = (a / ARMS) * Math.PI * 2;
+        for(var i = 0; i < perArm; i++){
+          var t = i / perArm; // 0 (core) .. 1 (rim)
+          var angle = armOffset + t * Math.PI * 2.4 + (Math.random() - 0.5) * 0.4;
+          var r = 0.03 + t * 0.44 + (Math.random() - 0.5) * (0.02 + t * 0.05);
+          var gold = Math.random() < 0.4;
+          points.push({
+            angle: angle, r: Math.max(0, r),
+            size: 0.35 + Math.random() * (gold ? 0.9 : 1.1),
+            baseA: 0.18 + Math.random() * 0.5,
+            color: gold ? '201,151,75' : '255,243,220', /* --gold : --white-hot */
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+      }
+    }
+    function pickThread(t){
+      thread = {
+        a: points[(Math.random() * points.length) | 0],
+        b: points[(Math.random() * points.length) | 0],
+        start: t, dur: 1500
+      };
+    }
+    function project(p){
+      var ang = p.angle + rot;
+      return {
+        x: W / 2 + px + Math.cos(ang) * p.r * scale,
+        y: H / 2 + py + Math.sin(ang) * p.r * scale * 0.62 /* flattened, edge-on disk */
+      };
+    }
+    function draw(t){
+      ctx.clearRect(0, 0, W, H);
+      for(var i = 0; i < points.length; i++){
+        var p = points[i], pt = project(p);
+        var tw = REDUCED_MOTION ? 1 : (0.82 + 0.18 * Math.sin(t / 2600 + p.phase));
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(' + p.color + ',' + (p.baseA * tw).toFixed(3) + ')';
+        ctx.arc(pt.x, pt.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if(thread && !REDUCED_MOTION){
+        var age = t - thread.start;
+        if(age > thread.dur){ thread = null; }
+        else{
+          var env = age < thread.dur * 0.35 ? age / (thread.dur * 0.35) : 1 - (age - thread.dur * 0.35) / (thread.dur * 0.65);
+          var p1 = project(thread.a), p2 = project(thread.b);
+          ctx.strokeStyle = 'rgba(201,151,75,' + (0.5 * env).toFixed(3) + ')'; /* --gold, faint */
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+        }
+      }
+    }
+
+    resize();
+    makePoints();
+    draw(0);
+
+    if(REDUCED_MOTION){
+      window.addEventListener('resize', function(){ resize(); draw(0); });
+      return; // static single paint — no rotation, no parallax, no threads, no rAF
+    }
+
+    var running = false, rafId = null, visible = true, pageVisible = !document.hidden, last = 0;
+    function loop(t){
+      if(!last) last = t;
+      var dt = t - last; last = t;
+      rot += ROT_SPEED * (dt / 1000);
+      px += (tx - px) * 0.06; py += (ty - py) * 0.06;
+      if(t >= nextThreadAt){ pickThread(t); nextThreadAt = t + 6500 + Math.random() * 1000; }
+      draw(t);
+      if(running) rafId = requestAnimationFrame(loop);
+    }
+    function start(){ if(running) return; running = true; last = 0; rafId = requestAnimationFrame(loop); }
+    function stop(){ running = false; if(rafId) cancelAnimationFrame(rafId); rafId = null; }
+    function sync(){ if(visible && pageVisible) start(); else stop(); }
+
+    wrap.addEventListener('mousemove', function(e){
+      var rect = wrap.getBoundingClientRect();
+      tx = Math.max(-6, Math.min(6, ((e.clientX - rect.left) / rect.width - 0.5) * 12));
+      ty = Math.max(-6, Math.min(6, ((e.clientY - rect.top) / rect.height - 0.5) * 12));
+    });
+    wrap.addEventListener('mouseleave', function(){ tx = 0; ty = 0; });
+
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        visible = entry.isIntersecting;
+        // Console line makes the pause/resume state observable for debugging.
+        console.log('[vignette] ' + (visible ? 'resumed (visible)' : 'paused (offscreen)'));
+      });
+      sync();
+    }, { threshold: 0 });
+    io.observe(wrap);
+    document.addEventListener('visibilitychange', function(){
+      pageVisible = !document.hidden;
+      console.log('[vignette] ' + (pageVisible ? 'resumed (document visible)' : 'paused (document hidden)'));
+      sync();
+    });
+    window.addEventListener('resize', resize);
+
+    sync();
+  }
+
+  // ===== MODULE: gaugesMotion (heat-up fill + count-up numerals) =====
+  function gaugesMotion(){
+    var items = document.querySelectorAll('.gauge-item');
+    if(!items.length) return;
+
+    function ordinal(n){
+      var v = n % 100;
+      if(v >= 11 && v <= 13) return n + 'th';
+      switch(n % 10){
+        case 1: return n + 'st';
+        case 2: return n + 'nd';
+        case 3: return n + 'rd';
+        default: return n + 'th';
+      }
+    }
+
+    function finalize(item){
+      var fill = item.querySelector('.gauge-fill');
+      var valueEl = item.querySelector('.gauge-value');
+      var target = parseFloat(item.getAttribute('data-value'));
+      fill.style.width = target + '%';
+      valueEl.textContent = item.getAttribute('data-value-label');
+    }
+
+    if(REDUCED_MOTION){
+      items.forEach(finalize);
+      return;
+    }
+
+    function animate(item){
+      var fill = item.querySelector('.gauge-fill');
+      var valueEl = item.querySelector('.gauge-value');
+      var target = parseFloat(item.getAttribute('data-value'));
+      var isPercentile = item.getAttribute('data-suffix') === 'percentile';
+      var finalLabel = item.getAttribute('data-value-label');
+      var duration = 1200;
+      var startTime = null;
+
+      fill.style.width = target + '%'; // the CSS transition (1.2s var(--ease-section)) carries the bar
+
+      function tick(ts){
+        if(startTime === null) startTime = ts;
+        var t = Math.min(1, (ts - startTime) / duration);
+        var eased = 1 - Math.pow(1 - t, 3); // ease-out cubic, matches the bar's ease-out feel
+        var current = Math.round(eased * target);
+        valueEl.textContent = isPercentile ? (ordinal(current) + ' percentile') : String(current);
+        if(t < 1){
+          requestAnimationFrame(tick);
+        } else {
+          valueEl.textContent = finalLabel; // lock to the exact authored copy
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          animate(entry.target);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold:0.2 });
+    items.forEach(function(item){ io.observe(item); });
+  }
+
+  // ===== MODULE: spy (mini-map scrollspy + keyboard nav spine) =====
+  function spy(){
+    var nav = document.getElementById('minimap');
+    var sky = document.getElementById('sky');
+    if(!nav) return;
+
+    // every section the mini-map targets, and which mini-star lights for it:
+    // THE MAKER lights the flame; SHIPPED/COMMISSION light the anvil base
+    // (shipped + commission have no star of their own — they reuse
+    // homelab's base star as the shared indicator).
+    var SECTIONS = [
+      { id:'firmament',      label:'Firmament',      star:'horn' },
+      { id:'muster',         label:'Muster',         star:'face-l' },
+      { id:'sparks',         label:'Sparks',         star:'face-r' },
+      { id:'patternmap',     label:'PatternMap',     star:'waist' },
+      { id:'veteran-finder', label:'Veteran Finder', star:'vetfinder' },
+      { id:'boilerplate',    label:'Boilerplate',    star:'boiler' },
+      { id:'faith',          label:'Faith',          star:'faith' },
+      { id:'homelab',        label:'The Homelab',    star:'base' },
+      { id:'maker',          label:'The Maker',      star:'flame' },
+      { id:'shipped',        label:'Shipped',        star:'base' },
+      { id:'commission',     label:'The Commission', star:'base' }
+    ];
+    var LABELS = { 'horn':'FIRMAMENT', 'face-l':'MUSTER', 'face-r':'SPARKS', 'waist':'PATTERNMAP', 'base':'THE HOMELAB', 'boiler':'BOILERPLATE', 'vetfinder':'VETERAN FINDER', 'faith':'FAITH', 'flame':'THE MAKER' };
+    var starToSection = { 'horn':'firmament', 'face-l':'muster', 'face-r':'sparks', 'waist':'patternmap', 'base':'homelab', 'boiler':'boilerplate', 'vetfinder':'veteran-finder', 'faith':'faith', 'flame':'maker' };
+
+    var SVGNS = 'http://www.w3.org/2000/svg';
+    function el(tag, attrs){
+      var e = document.createElementNS(SVGNS, tag);
+      for(var k in attrs){ e.setAttribute(k, attrs[k]); }
+      return e;
+    }
+
+    function igniteMiniStar(key){
+      var g = starEls[key];
+      if(!g) return;
+      g.classList.add('is-igniting');
+      setTimeout(function(){ g.classList.remove('is-igniting'); }, 150);
+    }
+
+    // ---- 1. the accessible spine: real <a> links, one per section. These
+    // sit OUTSIDE .minimap-visual so they stay keyboard-reachable and
+    // properly focus-visible (position:fixed reveal, see CSS) regardless of
+    // whether the decorative mini-map has docked into view yet. ----
+    var linksList = document.createElement('ul');
+    linksList.className = 'minimap-links';
+    SECTIONS.forEach(function(s){
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.className = 'minimap-link visually-hidden';
+      a.href = '#' + s.id;
+      a.textContent = s.label;
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        igniteMiniStar(s.star);
+        travelTo(s.id, 900);
+      });
+      li.appendChild(a);
+      linksList.appendChild(li);
+    });
+    nav.appendChild(linksList);
+
+    // ---- 2. the miniature constellation (decorative, aria-hidden; the real
+    // navigation is the link list above) — same CONSTELLATION geometry as
+    // the sky, independently framed to a tight viewBox. ----
+    var byId = {};
+    var allPts = [];
+    CONSTELLATION.anvil.forEach(function(p){ byId[p.id] = p; allPts.push(p); });
+    CONSTELLATION.flame.forEach(function(p){ byId[p.id] = p; allPts.push(p); });
+    var xs = allPts.map(function(p){ return p.x; });
+    var ys = allPts.map(function(p){ return p.y; });
+    var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+    var minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
+    var pad = (maxX - minX) * 0.12 + 20;
+    var vb = { x:minX - pad, y:minY - pad, w:(maxX - minX) + pad * 2, h:(maxY - minY) + pad * 2 };
+
+    var visual = document.createElement('div');
+    visual.className = 'minimap-visual';
+    var svg = el('svg', { class:'minimap-svg', viewBox: vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h, 'aria-hidden':'true', focusable:'false' });
+
+    var threadsG = el('g', {});
+    CONSTELLATION.threads.forEach(function(pair){
+      var a = byId[pair[0]], b = byId[pair[1]];
+      if(!a || !b) return;
+      threadsG.appendChild(el('line', { class:'minimap-thread', x1:a.x, y1:a.y, x2:b.x, y2:b.y }));
+    });
+    svg.appendChild(threadsG);
+
+    var starsG = el('g', {});
+    var starEls = {}; // role key -> outer <g> (positioned, focusable, clickable)
+    function miniStar(p, key, r){
+      var g = el('g', {
+        class:'minimap-star', 'data-star':key, transform:'translate(' + p.x + ',' + p.y + ')',
+        tabindex:'-1', 'aria-hidden':'true' // decorative echo of the real <a> links above
+      });
+      var inner = el('g', { class:'minimap-star-inner' });
+      inner.appendChild(el('circle', { class:'minimap-star-halo', r: r * 3 }));
+      inner.appendChild(el('circle', { class:'minimap-star-core', r: r }));
+      g.appendChild(inner);
+      // generous transparent hit area, independent of the tiny visual dot —
+      // same padded-hit-area logic as the sky's stars, sized for
+      // this instrument's own small scale.
+      g.appendChild(el('circle', { class:'minimap-star-hit', r: Math.max(r * 3, 8) }));
+      var label = el('text', { class:'minimap-label', x:0, y:-(r * 3 + 4), 'text-anchor':'middle' });
+      label.textContent = LABELS[key] || '';
+      g.appendChild(label);
+      starsG.appendChild(g);
+      starEls[key] = g;
+      g.style.cursor = 'pointer';
+      g.addEventListener('click', function(){
+        igniteMiniStar(key);
+        travelTo(starToSection[key], 900);
+      });
+    }
+    CONSTELLATION.anvil.forEach(function(p){
+      if(p.role){
+        miniStar(p, p.role, p.role === 'horn' ? 3 : 2.2);
+      } else {
+        starsG.appendChild(el('circle', { class:'minimap-dim', cx:p.x, cy:p.y, r:1 }));
+      }
+    });
+    miniStar({ x:438, y:107 }, 'flame', 3.4); // flame cluster's visual center (matches constellation()'s flameCenter)
+    svg.appendChild(starsG);
+    visual.appendChild(svg);
+    nav.appendChild(visual);
+
+    // ---- 3. scrollspy: burn the star of whichever section is centered in
+    // the viewport; others dim (default, no .is-active class). ----
+    var spyTargets = SECTIONS
+      .map(function(s){ return { star:s.star, el:document.getElementById(s.id) }; })
+      .filter(function(t){ return !!t.el; });
+    var activeStar = null;
+    function setActive(starKey){
+      if(starKey === activeStar) return;
+      if(activeStar && starEls[activeStar]) starEls[activeStar].classList.remove('is-active');
+      activeStar = starKey;
+      if(activeStar && starEls[activeStar]) starEls[activeStar].classList.add('is-active');
+    }
+    if('IntersectionObserver' in window && spyTargets.length){
+      var spyIo = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(!entry.isIntersecting) return;
+          var match = spyTargets.filter(function(t){ return t.el === entry.target; })[0];
+          if(match) setActive(match.star);
+        });
+      }, { rootMargin:'-50% 0px -50% 0px', threshold:0 });
+      spyTargets.forEach(function(t){ spyIo.observe(t.el); });
+    }
+
+    // ---- 4. dock: fade+rise in once #sky has scrolled off ----
+    nav.removeAttribute('hidden');
+    if(sky && 'IntersectionObserver' in window){
+      var dockIo = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          nav.classList.toggle('is-docked', !entry.isIntersecting);
+        });
+      }, { threshold:0 });
+      dockIo.observe(sky);
+    } else {
+      nav.classList.add('is-docked');
+    }
+  }
+
+  // ===== INIT =====
+  function init(){
+    renderWorks();
+    renderMaker();
+    renderLedger();
+    reveal();
+    field();
+    constellation();
+    descent();
+    vignette();
+    makerFlame();
+    gaugesMotion();
+    spy();
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+/shots/
+LOOK.md
+DESIGN.md
+HANDOFF*
+*.log
+__pycache__/
+.DS_Store
