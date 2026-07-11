@@ -1213,6 +1213,12 @@ footer{
   'use strict';
 
   var REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Touch devices: iOS fires scroll events batched/late (at momentum-settle,
+  // not continuously), so any JS scroll-linked parallax "catches up" with a
+  // jump when you stop — reads as the hero glitching backward. Treat coarse
+  // pointers like reduced-motion: show the static composition, bind no
+  // scroll-driven transforms.
+  var COARSE_POINTER = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
   // ===== MODULE: data — the only place content lives =====
   var WORKS = [
@@ -2432,7 +2438,7 @@ footer{
     kickerWrap.appendChild(kicker);
     band.appendChild(kickerWrap);
 
-    if(REDUCED_MOTION){
+    if(REDUCED_MOTION || COARSE_POINTER){
       // static, legible end-state — no scroll-bound motion at all.
       starsWrap.style.opacity = '0.3';
       horizon.style.opacity = '0.55';
