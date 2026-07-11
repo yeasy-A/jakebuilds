@@ -146,8 +146,13 @@ a:hover,a:focus-visible{ text-decoration:underline; }
    2 sky-constellation-wrap (SVG) · 3 sky-content (text) · 4 greek key.
    =================================================================== */
 #sky{
-  height:100dvh;
-  min-height:100dvh;
+  /* svh (small viewport height), NOT dvh: the hero must NOT grow/shrink as the
+     mobile URL bar hides/shows — that dynamic resize reflows the whole page
+     mid-scroll and reads as the page "glitching backwards" when you stop. */
+  height:100vh;
+  height:100svh;
+  min-height:100vh;
+  min-height:100svh;
   background:var(--void);
   display:flex;
   flex-direction:column;
