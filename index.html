@@ -1456,23 +1456,14 @@ footer{
 
       if(w.visual === 'vignette'){
         // FIRMAMENT: a live 2D-canvas galaxy vignette (see vignette()
-        // module) with its own overlay action link — an override of
-        // the general "visual, then action below it" plaque template.
+        // module). The action link is the standard "Enter →" BELOW the
+        // visual (built further down), same as every other plaque — not an
+        // overlay on the canvas.
         var canvas = document.createElement('canvas');
         canvas.className = 'vignette-canvas';
         canvas.id = 'firmamentVignette';
-        canvas.setAttribute('aria-hidden', 'true'); // decorative; the overlay link below carries the meaning
+        canvas.setAttribute('aria-hidden', 'true'); // decorative; the standard "Enter →" action below carries the meaning
         media.appendChild(canvas);
-
-        var enter = document.createElement('a');
-        enter.className = 'plaque-action vignette-action';
-        enter.href = w.href;
-        enter.textContent = 'Enter Firmament →';
-        if(/^https?:\/\//i.test(w.href)){
-          enter.target = '_blank';
-          enter.rel = 'noopener noreferrer';
-        }
-        media.appendChild(enter);
       } else if(w.visual === 'schematic'){
         // HOMELAB: the inlined schematic SVG IS the content — it carries
         // its own role="img" + aria-label, so the wrapper stays unhidden.
@@ -1495,11 +1486,10 @@ footer{
       }
       article.appendChild(media);
 
-      // Standard "ENTER →" action below the visual — every plaque except
-      // FIRMAMENT (its action is the vignette's own overlay link, above)
-      // and HOMELAB (no action link — the schematic IS the content; a
-      // dead/dimmed pseudo-link would be misleading).
-      if(w.visual !== 'vignette' && w.id !== 'homelab' && w.href){
+      // Standard "Enter →" action below the visual — every plaque (Firmament
+      // included) except HOMELAB (no action link — the schematic IS the
+      // content; a dead/dimmed pseudo-link would be misleading).
+      if(w.id !== 'homelab' && w.href){
         var a = document.createElement('a');
         a.className = 'plaque-action';
         a.href = w.href;
