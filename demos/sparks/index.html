@@ -14,13 +14,13 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Jake&#39;s Workshop" />
 <meta property="og:title" content="Sparks" />
-<meta property="og:description" content="Ten quick brain games — creativity, word links, patterns, rhyme, plus focus & memory trainers." />
+<meta property="og:description" content="5 of Sparks' twenty-seven brain games, cut for the portfolio." />
 <meta property="og:image" content="og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Sparks" />
-<meta name="twitter:description" content="Ten quick brain games — creativity, word links, patterns, rhyme, plus focus & memory trainers." />
+<meta name="twitter:description" content="5 of Sparks' twenty-seven brain games, cut for the portfolio." />
 <meta name="twitter:image" content="og.png" />
 <title>Sparks — creativity brain games</title>
 <style>
@@ -65,7 +65,7 @@
   .logo .mark{font-size:22px}
   .bar .spacer{flex:1}
   .modepill{display:flex;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
-  .modepill button{font:inherit;font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--ink-soft);padding:11px 13px;border-radius:999px;cursor:pointer;line-height:1}
+  .modepill button{font:inherit;font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--ink-soft);padding:11px 13px;min-height:44px;border-radius:999px;cursor:pointer;line-height:1}
   .modepill button.on{background:var(--ink);color:var(--paper-2)}
   .iconbtn{border:1px solid var(--line);background:var(--paper-2);width:44px;height:44px;border-radius:12px;cursor:pointer;display:grid;place-items:center;color:var(--ink);font-size:17px}
   .iconbtn:active{transform:translateY(1px)}
@@ -918,9 +918,11 @@ const GAMES = [
   {id:"blindfold", icon:"🙈", name:"Blindfold", tag:"memorize the path"},
   {id:"iconography", icon:"🔑", name:"Iconography", tag:"know the saint"},
   {id:"vestments", icon:"🎗️", name:"Vestments", tag:"tap the color"},
-  {id:"rosewindow", icon:"🌹", name:"Rose Window", tag:"match the rotation"},
+  {id:"rosewindow", icon:"🌹", name:"Rose Window", tag:"match the pattern"},
   {id:"illumination", icon:"📜", name:"Illumination", tag:"find the sacred symbol"},
 ];
+const DEMO_ONLY=new Set(["stroop", "driftwatch", "nback", "ration", "mirror"]);
+const DEMO_GAMES=GAMES.filter(g=>DEMO_ONLY.has(g.id));
 
 /* ---------- Sparks content ---------- */
 const OBJECTS = [
@@ -1803,7 +1805,7 @@ document.querySelector("#screen-stats").insertAdjacentHTML("afterend", `
 `);
 
 const GOLDEN_PCT = (Math.sqrt(5)-1)/2*100; // ≈61.803% — the true split point, measured from the bar's left edge
-const GE_ROUND_MS = 2000;                  // exact 2s tap window per round, per spec
+const GE_ROUND_MS = 2000;                  // exact 2s tap window per round
 const GE_TIERS = [                         // ordered tightest→loosest; first match wins. err is abs percentage-point distance from GOLDEN_PCT
   {max:1.2, icon:"🎯", label:"Perfect!",  mult:2.2},
   {max:3,   icon:"✨", label:"Excellent", mult:1.7},
@@ -2752,7 +2754,7 @@ $("#rfEnd").onclick=()=>endRuleForge();
 /* =========================================================
    GHOST (compete & master — race your own best-ever run)
    Wraps the Patterns "what comes next" drill (reuses genPattern()
-   and its data pools verbatim — PAT_PALETTES/CLOCKS/MOONS/ARROWS,
+   and its data pools — PAT_PALETTES/CLOCKS/MOONS/ARROWS,
    already defined earlier in this file; no new question content)
    in a live replay: every answer this run is timestamped, and on
    later runs a translucent 👻 marker replays your best-ever run's
@@ -2760,7 +2762,7 @@ $("#rfEnd").onclick=()=>endRuleForge();
    pull ahead or fall behind in real time. The overlay pattern here
    (record {t,correct} trace -> persist best -> replay-on-a-clock
    against the live run) is written to be reusable by any other
-   tap-to-answer mode later, per spec.
+   tap-to-answer mode later.
    ========================================================= */
 let ghScore=0, ghCombo=0, ghBestCombo=0, ghCur=null, ghLocked=false, ghTimer=null, ghSeed=null;
 let ghTrace=[], ghStart=0, ghTicker=null;
@@ -3618,7 +3620,7 @@ let illumScore=0, illumCombo=0, illumBestCombo=0, illumRound=1, illumSessionBest
 function illumFmt(ms){ return (ms/1000).toFixed(2); }
 function illumPick(arr,rng){ return arr[Math.floor(rng()*arr.length)]; }
 function genIllumination(rng,round){
-  const gridN=Math.min(9,4+Math.ceil(round/2)); const total=gridN*gridN; // same density-by-round curve as Needle — reused verbatim per spec
+  const gridN=Math.min(9,4+Math.ceil(round/2)); const total=gridN*gridN; // same density-by-round curve as Needle
   const target=illumPick(ILLUM_SYMBOLS,rng); const targetIdx=Math.floor(rng()*total);
   const tiles=[]; for(let i=0;i<total;i++) tiles.push(i===targetIdx?target.e:illumPick(ILLUM_DECOYS,rng));
   return {gridN,total,target,targetIdx,tiles};
@@ -3712,11 +3714,12 @@ function renderGrid(){
   const tile = g => { const b=bestOf(g.id);
     return `<button class="gcard" data-game="${g.id}"><div class="gi">${g.icon}</div><div class="gnm">${g.name}</div><div class="gtag">${g.tag}</div>${b>0?`<div class="gbest">best ${b}</div>`:''}</button>`; };
   const blocks = CATEGORIES.map(c=>{
-    const tiles = c.ids.map(id=>byId[id]).filter(Boolean).map(tile).join("");
+    const tiles = c.ids.map(id=>byId[id]).filter(Boolean).filter(g=>DEMO_ONLY.has(g.id)).map(tile).join(""); if(!tiles) return "";
     return `<section class="catblock"><div class="cat-h"><span class="cat-n">${c.name}</span><span class="cat-t">${c.trains}</span></div><div class="gamegrid">${tiles}</div></section>`;
   }).join("");
+  const demonote = `<section class="catblock"><div class="cat-h"><span class="cat-n">Demo cut</span><span class="cat-t">5 of the twenty-seven games</span></div></section>`;
   const surprise = `<section class="catblock"><div class="gamegrid"><button class="gcard rnd" data-game="__random"><div class="gi">🎲</div><div class="gnm">Surprise me</div><div class="gtag">random game</div></button></div></section>`;
-  $("#gameGrid").innerHTML = blocks + surprise;
+  $("#gameGrid").innerHTML = blocks + demonote + surprise;
 }
 function refreshHome(){
   renderGrid();
@@ -3741,9 +3744,10 @@ function refreshLaunch(){
   else sl.innerHTML=`Play today to start a streak 🔥`;
 }
 function openLaunch(id){
-  if(id==="__random"){ S.game=GAMES[Math.floor(Math.random()*GAMES.length)].id; save(); if(S.mode==="party") openParty(); else startCurrentGame(); return; }
+  if(id==="__random"){ S.game=DEMO_GAMES[Math.floor(Math.random()*DEMO_GAMES.length)].id; save(); if(S.mode==="party") openParty(); else startCurrentGame(); return; }
   S.game=id; save(); refreshLaunch(); show("launch");
 }
+if(typeof S!=="undefined" && !DEMO_ONLY.has(S.game)){ S.game=DEMO_GAMES[0].id; }
 $("#gameGrid").onclick=e=>{ const b=e.target.closest(".gcard"); if(!b)return; openLaunch(b.dataset.game); };
 $("#launchBack").onclick=goHome;
 $("#modePill").onclick=e=>{ const b=e.target.closest("button"); if(!b)return; S.mode=b.dataset.mode; save(); refreshLaunch(); };

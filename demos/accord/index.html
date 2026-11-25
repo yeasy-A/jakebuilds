@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Cockpit — Accord (recreation)</title>
+<meta name="description" content="A public, sample-data recreation of the Cockpit screen from Accord, Jake's self-hosted family/homestead app. Not the live app, no real data.">
+<style>
+/* ===== self-hosted fonts — no CDN, no network ===== */
+@font-face{font-family:"Space Grotesk";src:url("fonts/SpaceGrotesk-latin-300-700.woff2") format("woff2");font-weight:300 700;font-style:normal;font-display:swap;}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-latin-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-latin-700.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap;}
+@font-face{font-family:"Fraunces";src:url("fonts/Fraunces-latin-100-900.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap;}
+@font-face{font-family:"Caveat";src:url("fonts/Caveat-latin-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:"Geist";src:url("fonts/GeistSans-latin-100-900.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap;}
+
+/* ===== Theme tokens ===== */
+:root {
+  /* Backgrounds */
+  --bg-base:        #0a0e0c;
+  --bg-elevated:    #141a17;
+  --bg-card:        #1a201d;
+  --bg-card-hover:  #222a26;
+  --bg-input:       #161c19;
+  --bg-overlay:     rgba(10, 14, 12, 0.7);
+
+  /* Accent — forest green */
+  --accent:         #2d5a3f;
+  --accent-hover:   #3a7252;
+  --accent-bright:  #4ea872;
+  --accent-glow:    rgba(78, 168, 114, 0.15);
+
+  /* Status */
+  --status-green:   #4ea872;
+  --status-green-bg: rgba(78, 168, 114, 0.12);
+  --status-yellow:  #d4a93a;
+  --status-yellow-bg: rgba(212, 169, 58, 0.12);
+  --status-red:     #c84a3a;
+  --status-red-bg:  rgba(200, 74, 58, 0.12);
+  --status-grey:    #3a4540;
+  --status-grey-bg: rgba(58, 69, 64, 0.3);
+
+  /* Text */
+  --text-primary:   #e8ede9;
+  --text-secondary: #9aa49e;
+  --text-tertiary:  #a1ada5;
+  --text-accent:    #4ea872;
+
+  /* Borders */
+  --border-subtle:  rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-strong:  rgba(255, 255, 255, 0.18);
+  --border-accent:  rgba(78, 168, 114, 0.4);
+
+  /* Glass */
+  --glass-bg:       rgba(20, 26, 23, 0.55);
+  --glass-border:   rgba(78, 168, 114, 0.18);
+  --glass-blur:     blur(18px) saturate(140%);
+
+  /* Fonts — sleek modern but rustic: Space Grotesk (sans) + Space Mono (mono) */
+  --font-sans: var(--font-grotesk), var(--font-geist-sans), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+
+  /* Shadow */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
+  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.5), 0 0 0 1px rgba(78,168,114,0.25);
+  --shadow-glow: 0 0 24px rgba(78,168,114,0.15);
+
+  /* Ambient background glow strength — the Background engine's Glow control sets
+     this (glow-lo/med/hi); Calm zeroes it, Hype amps it. No photos anywhere. */
+  --bg-glow-opacity: 0.55;
+
+  /* Page framing — overridable via JS */
+  --page-pad: 24px 28px;
+  --page-max: 1760px;
+  --frame-border: 0;
+  --frame-radius: 0;
+  --frame-pad: 0;
+  --frame-bg: transparent;
+}
+/* ---- demo-only additions: these four vars are injected by next/font classNames in the
+   real app by its font loader, not in the stylesheet. Defined here so --font-sans /
+   --font-mono / --font-display resolve to the self-hosted faces above. A stand-in
+   for what the app's font loader normally supplies. ---- */
+:root{
+  --font-grotesk: "Space Grotesk", system-ui, sans-serif;
+  --font-space-mono: "Space Mono", ui-monospace, monospace;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-hand: "Caveat", cursive;
+  --font-geist-sans: "Geist", system-ui, sans-serif;
+  --font-geist-mono: "Space Mono", ui-monospace, monospace;
+}
+
+/* ---- minimal hand-written reset standing in for Tailwind's preflight (globals.css
+   imports "tailwindcss" ONLY for this reset ; this demo carries a plain
+   reset instead). ---- */
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+ul{ margin:0; padding:0; list-style:none; }
+button,input{ font:inherit; color:inherit; }
+a{ color:inherit; }
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UNIFIED BACKGROUND ENGINE
+   ═══════════════════════════════════════════════════════════════════════════ */
+.honeycomb-bg, .dashboard-bg { position: relative; min-height: 100vh; }
+
+.honeycomb-bg::before, .dashboard-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--app-texture-opacity, 0.05);
+  background-image: var(--app-texture, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V18L28 2l28 16v32L28 66zm0-6l22-12.7V21.7L28 9 6 21.7v25.6L28 60z' fill='%234ea872'/%3E%3C/svg%3E"));
+  background-size: var(--app-texture-size, 56px 100px);
+}
+
+.honeycomb-bg::after, .dashboard-bg::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--bg-glow-opacity, 0.55);
+  background:
+    radial-gradient(50% 38% at 14% 12%, color-mix(in srgb, var(--accent-bright) 14%, transparent), transparent 70%),
+    radial-gradient(52% 40% at 88% 14%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 72%),
+    radial-gradient(72% 46% at 50% 102%, color-mix(in srgb, var(--accent-bright) 12%, transparent), transparent 74%);
+}
+
+.honeycomb-bg > *, .dashboard-bg > * { position: relative; z-index: 1; }
+
+.calm .honeycomb-bg::after, .calm .dashboard-bg::after { opacity: 0; }
+.calm .honeycomb-bg::before, .calm .dashboard-bg::before { opacity: calc(var(--app-texture-opacity, 0.05) * 0.6); }
+.hype .honeycomb-bg::after, .hype .dashboard-bg::after {
+  opacity: calc(var(--bg-glow-opacity, 0.55) + 0.3);
+  background:
+    radial-gradient(48% 38% at 14% 12%, color-mix(in srgb, var(--accent-bright) 26%, transparent), transparent 70%),
+    radial-gradient(50% 40% at 88% 14%, color-mix(in srgb, var(--gold) 18%, transparent), transparent 72%),
+    radial-gradient(74% 48% at 50% 102%, color-mix(in srgb, var(--accent-bright) 28%, transparent), transparent 74%);
+}
+.hype .honeycomb-bg::before, .hype .dashboard-bg::before {
+  background-image: var(--hype-texture, none), var(--app-texture, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V18L28 2l28 16v32L28 66zm0-6l22-12.7V21.7L28 9 6 21.7v25.6L28 60z' fill='%234ea872'/%3E%3C/svg%3E"));
+  background-size: var(--hype-texture-size, auto), var(--app-texture-size, 56px 100px);
+  opacity: max(calc(var(--app-texture-opacity, 0.05) * 1.5), var(--hype-tex-floor, 0));
+}
+:root { --hype-card-solidity: 90%; }
+.hype .card, .hype .card-glass {
+  background: color-mix(in srgb, var(--bg-card) var(--hype-card-solidity), transparent);
+  backdrop-filter: blur(3px) saturate(1.05);
+  -webkit-backdrop-filter: blur(3px) saturate(1.05);
+  border-color: var(--border-default);
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+}
+.card:hover { border-color: var(--border-accent); transform: translateY(-1px); }
+
+.index-bubble {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 9px 14px;
+  max-width: 100%;
+}
+.card-glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+/* Typography — .label / .mono-heading / .btn-ghost */
+.mono-heading {
+  font-family: var(--font-display, var(--font-mono));
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+.label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  text-decoration: none;
+}
+.btn-ghost:hover { border-color: var(--border-accent); color: var(--text-accent); }
+
+/* streak-flame (+ the html:not(.calm) drop-shadow + the hype keyframes it uses) */
+@keyframes streak-flicker { 0%, 100% { transform: scale(1) rotate(-1.5deg); } 25% { transform: scale(1.08) rotate(2deg); } 50% { transform: scale(0.96) rotate(-2deg); } 75% { transform: scale(1.05) rotate(1.5deg); } }
+.streak-flame { display: inline-block; transform-origin: 50% 80%; will-change: transform; }
+.streak-flame.lit { /* lit = glow only by default; flicker added under .hype */ }
+@media (prefers-reduced-motion: reduce) {
+  .streak-flame.lit { animation: none; }
+}
+@media (max-width: 560px) { .hide-narrow { display: none !important; } }
+
+/* dash-fade */
+@keyframes dashFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.dash-fade { animation: dashFade .26s cubic-bezier(.2,.8,.2,1); }
+@media (prefers-reduced-motion: reduce) { .dash-fade { animation: none; } }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME LAYER — modes, glow, textures, fonts
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  --gold:#d9b65a; --gold-hi:#e8cb70; --rose:#d96a8a; --violet:#7a5c8a; --board:#7b80d6; --faith:#5aa6c9; --forge:#cf7a3e; --media:#4f8fd9;
+  --neon: 0 0 6px color-mix(in srgb, var(--accent-bright) 60%, transparent);
+  --glowbox: 0 0 0 1px var(--border-accent),
+             0 0 16px color-mix(in srgb, var(--accent-bright) 16%, transparent);
+}
+
+/* ── 1 · btop titled boxes ── */
+.card{ position:relative; overflow:visible; }
+.card:has(> .label:first-child),
+.card:has(> .mono-heading:first-child),
+.card-glass:has(> .label:first-child),
+.card-glass:has(> .mono-heading:first-child){ overflow:visible; padding-top:28px; }
+.card > .label:first-child,
+.card > .mono-heading:first-child,
+.card-glass > .label:first-child,
+.card-glass > .mono-heading:first-child{
+  position:absolute; top:-10px; left:14px; margin:0; z-index:3;
+  padding:2px 9px;
+  background:var(--bg-base);
+  border:1px solid var(--border-strong);
+  border-radius:7px;
+  font-family:var(--font-mono); font-weight:600;
+  font-size:10px; line-height:1.5; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--accent-bright);
+  max-width:calc(100% - 28px);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.card > .mono-heading:first-child,
+.card-glass > .mono-heading:first-child{ font-size:11px; letter-spacing:.08em; }
+
+/* ── 2 · shared "lit" look ── */
+html:not(.calm) .card{ box-shadow:var(--shadow-card), var(--glowbox); }
+html:not(.calm) .card:hover{ border-color:var(--border-accent); box-shadow:var(--shadow-card-hover), var(--glowbox); }
+html:not(.calm) .card > .label:first-child,
+html:not(.calm) .card > .mono-heading:first-child,
+html:not(.calm) .card-glass > .label:first-child,
+html:not(.calm) .card-glass > .mono-heading:first-child{
+  border-color:var(--border-accent); box-shadow:var(--neon);
+}
+html:not(.calm) .mono-heading{ text-shadow:0 0 7px color-mix(in srgb, var(--accent-bright) 22%, transparent); }
+html:not(.calm) .streak-flame{ filter:drop-shadow(0 0 8px var(--gold)); }
+
+/* ── 3 · HYPE ── */
+.hype{
+  --neon: 0 0 7px color-mix(in srgb, var(--accent-bright) 82%, transparent),
+          0 0 16px color-mix(in srgb, var(--accent-bright) 45%, transparent);
+  --glowbox: 0 0 0 1px var(--accent-bright),
+             0 0 26px color-mix(in srgb, var(--accent-bright) 30%, transparent);
+}
+.hype .mono-heading{ text-shadow:var(--neon); }
+.hype .card > .label:first-child,
+.hype .card > .mono-heading:first-child{ text-shadow:var(--neon); }
+.hype .streak-flame{ filter:drop-shadow(0 0 12px var(--gold)) drop-shadow(0 0 4px var(--accent-bright)); }
+.hype .btn-primary{ box-shadow:0 0 18px color-mix(in srgb, var(--accent-bright) 45%, transparent); }
+.hype .card:hover{ transform:translateY(-2px); }
+.hype .pill-green{ box-shadow:0 0 10px var(--status-green-bg); }
+.hype .pill-yellow{ box-shadow:0 0 10px var(--status-yellow-bg); }
+.hype .pill-red{ box-shadow:0 0 10px var(--status-red-bg); }
+
+/* ── 4 · CALM ── */
+.calm *, .calm *::before, .calm *::after{ animation:none !important; transition:none !important; }
+.calm .honeycomb-bg > *, .calm .dashboard-bg > *{ filter:saturate(.8); }
+.calm .card{ box-shadow:var(--shadow-card); border-color:var(--border-default); }
+.calm .card:hover{ transform:none; }
+.calm .card > .label:first-child,
+.calm .card > .mono-heading:first-child,
+.calm .card-glass > .label:first-child,
+.calm .card-glass > .mono-heading:first-child{
+  color:var(--text-secondary); border-color:var(--border-default); box-shadow:none; text-shadow:none;
+}
+.calm .mono-heading{ text-shadow:none; }
+.calm .streak-flame{ filter:none; }
+
+/* ── 5 · GLOW levels ── */
+.glow-lo{
+  --neon: 0 0 3px color-mix(in srgb, var(--accent-bright) 45%, transparent);
+  --glowbox: 0 0 0 1px var(--border-accent);
+  --bg-glow-opacity: 0.32;
+}
+.glow-med{
+  --neon: 0 0 6px color-mix(in srgb, var(--accent-bright) 60%, transparent);
+  --glowbox: 0 0 0 1px var(--border-accent),
+             0 0 16px color-mix(in srgb, var(--accent-bright) 16%, transparent);
+  --bg-glow-opacity: 0.55;
+}
+.glow-hi{
+  --neon: 0 0 11px color-mix(in srgb, var(--accent-bright) 90%, transparent),
+          0 0 30px color-mix(in srgb, var(--accent-bright) 58%, transparent);
+  --glowbox: 0 0 0 1.5px var(--accent-bright),
+             0 0 44px color-mix(in srgb, var(--accent-bright) 42%, transparent);
+  --bg-glow-opacity: 0.9;
+}
+
+/* ── 6b · TEXTURE INTENSITY ── */
+.tint-lo{ --app-texture-opacity:.035; }
+.tint-med{ --app-texture-opacity:.07; }
+.tint-hi{ --app-texture-opacity:.12; }
+
+/* ── 7 · FONT themes ── */
+.font-modern{ --font-display: var(--font-grotesk), system-ui, sans-serif; }
+.font-cyber{ --font-display: var(--font-space-mono), ui-monospace, monospace; }
+.font-cyber .mono-heading{ letter-spacing:.01em; }
+.font-editorial{ --font-display: var(--font-serif), Georgia, serif; }
+.font-editorial .mono-heading{ letter-spacing:-0.01em; }
+
+/* ── 9 · ZONE color-stripes ── */
+.zone{ position:relative; }
+.zone::before{
+  content:""; position:absolute; left:0; top:11px; bottom:11px; width:3px;
+  border-radius:99px; box-shadow:var(--neon); pointer-events:none; z-index:2;
+}
+.zone.green::before{ background:var(--accent-bright); }
+.zone.gold::before { background:var(--gold); }
+.zone.rose::before { background:var(--rose); }
+
+/* ── 8 · motion gates ── */
+@keyframes bgGlowPulse{
+  from{ opacity:calc(var(--bg-glow-opacity, 0.55) + 0.18); }
+  to{ opacity:calc(var(--bg-glow-opacity, 0.55) + 0.42); }
+}
+@media (prefers-reduced-motion: no-preference){
+  .hype .honeycomb-bg::after,
+  .hype .dashboard-bg::after{ animation:bgGlowPulse 9s ease-in-out infinite alternate; }
+  .hype .streak-flame.lit{ animation: streak-flicker 1.4s ease-in-out infinite; }
+}
+@media (prefers-reduced-motion: reduce){
+  .hype .honeycomb-bg::after,
+  .hype .dashboard-bg::after{ animation:none; }
+}
+
+/* ===== cockpit layout grid ===== */
+.cockpit-grid{display:grid;grid-template-columns:1.32fr 1fr;gap:14px;align-items:start}
+.cockpit-metrics{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.cockpit-board3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cockpit-rooms{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.cockpit-grid > *,.cockpit-metrics > *,.cockpit-board3 > *{min-width:0}
+@media(max-width:900px){
+  .cockpit-grid{grid-template-columns:1fr}
+  .cockpit-grid > *{grid-row:auto !important;grid-column:auto !important}
+  .cockpit-metrics{grid-template-columns:1fr}
+}
+@media(max-width:560px){ .cockpit-board3{grid-template-columns:1fr} }
+
+/* ===== page frame (demo-only; AppShell's own mainStyle wasn't in scope to read, so
+   --page-pad is applied here on .app-main — the Page-frame picker still drives it live) ===== */
+.app-main{ padding: var(--page-pad, 24px 28px); }
+.top3-item.done .top3-text{ text-decoration:line-through; color:var(--text-tertiary); }
+.top3-box{ cursor:pointer; }
+.nav-inert{ cursor:default; }
+
+.corner-back{
+  position:fixed; top:16px; left:16px; z-index:500;
+  display:inline-flex; align-items:center; justify-content:center;
+  min-height:44px; box-sizing:border-box;
+  font:600 11px/1 ui-monospace, monospace; letter-spacing:.18em; text-transform:uppercase;
+  color:#EBBD6E; background:rgba(6,5,5,.72);
+  border:1px solid #1D1813; border-radius:6px; padding:10px 12px;
+  text-decoration:none; max-width:calc(50vw - 24px);
+}
+.corner-plaque{
+  position:fixed; bottom:16px; right:16px; z-index:500;
+  font:600 11px/1.5 ui-monospace, monospace; letter-spacing:.18em; text-transform:uppercase;
+  color:#9C9080; background:rgba(6,5,5,.72);
+  border-radius:6px; padding:10px 12px; text-align:right;
+  max-width:min(440px, calc(100vw - 32px));
+}
+
+/* ===== Look drawer ===== */
+.look-scrim{ position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:999; }
+.look-scrim[hidden]{ display:none; }
+.look-drawer{
+  position:fixed; top:0; right:0; height:100vh; width:400px; max-width:92vw;
+  background:var(--bg-elevated); border-left:1px solid var(--border-default);
+  z-index:1000; display:flex; flex-direction:column; box-shadow:-10px 0 34px rgba(0,0,0,.45);
+}
+.look-drawer[hidden]{ display:none; }
+.look-drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--border-subtle); flex-shrink:0; }
+.look-drawer-body{ flex:1; overflow-y:auto; padding:16px; }
+.look-drawer-foot{ padding:12px 16px; border-top:1px solid var(--border-subtle); flex-shrink:0; }
+@media(max-width:700px){
+  .app-main{ padding:16px !important; }
+  .look-drawer{
+    top:auto; bottom:0; left:0; right:0; width:100%; max-width:100%;
+    height:auto; max-height:70vh; border-left:none;
+    border-top:1px solid var(--border-default); border-radius:16px 16px 0 0;
+    box-shadow:0 -10px 34px rgba(0,0,0,.45);
+  }
+}
+</style>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// Theme catalog: texture patterns, hype overlays, page frames, and the
+// helpers that turn a selection into CSS custom properties.
+// ═══════════════════════════════════════════════════════════════════════════
+const uri = (svg) => `url("data:image/svg+xml,${encodeURIComponent(svg.replace(/\n\s*/g, ""))}")`
+
+const PATTERNS = [
+  { id: "none", name: "None", colors: 1, defaults: ["#4ea872"], opacity: 0, size: "0", gen: () => "none" },
+  {
+    id: "vangogh", name: "Starry Night", colors: 1, defaults: ["#2766a8"], opacity: 0.3, size: "220px 150px",
+    gen: () => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='220' height='150' viewBox='0 0 220 150'>
+      <defs><filter id='vg' x='-5%' y='-5%' width='110%' height='110%'>
+        <feTurbulence type='fractalNoise' baseFrequency='0.016' numOctaves='2' seed='8' stitchTiles='stitch' result='n'/>
+        <feDisplacementMap in='SourceGraphic' in2='n' scale='6'/></filter></defs>
+      <g filter='url(#vg)' fill='none' stroke-linecap='round'>
+        <path d='M0,18 q28,-10 56,0 t56,0 t56,0 t56,0' stroke='#3f6fb0' stroke-width='3'/>
+        <path d='M0,30 q28,-7 56,0 t56,0 t56,0 t56,0' stroke='#9cc0f0' stroke-width='1.8'/>
+        <path d='M96,52 C84,46 78,62 90,70 C104,79 124,68 122,50 C120,28 88,24 76,44' stroke='#bcd6ff' stroke-width='2.6'/>
+        <path d='M120,60 C112,56 110,66 118,70 C127,74 134,64 128,56' stroke='#cfe0ff' stroke-width='2'/>
+        <path d='M196,20 A14,14 0 1 0 196,48 A10,10 0 1 1 196,20 Z' fill='#f0c040' stroke='none'/>
+        <circle cx='192' cy='34' r='17' stroke='#e6b948' stroke-width='1' opacity='0.5'/>
+        <g fill='#ffe39a'><circle cx='40' cy='66' r='2'/><circle cx='150' cy='30' r='1.6'/><circle cx='66' cy='92' r='1.6'/></g>
+        <g stroke='#e6b948' stroke-width='0.8' opacity='0.7'><circle cx='40' cy='66' r='5'/><circle cx='150' cy='30' r='4.5'/></g>
+        <path d='M0,118 q28,11 56,0 t56,0 t56,0 t56,0' stroke='#e6b948' stroke-width='3.2'/>
+        <path d='M0,132 q28,8 56,0 t56,0 t56,0 t56,0' stroke='#d98a30' stroke-width='2.2'/>
+        <path d='M16,150 C9,124 22,116 16,92 C11,116 24,126 16,150 Z' fill='#16243f' stroke='none'/>
+      </g></svg>`),
+  },
+  {
+    id: "wood", name: "Wood grain", colors: 1, defaults: ["#6b4a2a"], opacity: 0.22, size: "120px 60px",
+    gen: () => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='120' height='60'>
+      <g fill='none' stroke-linecap='round'>
+        <path d='M0,9 q30,4 60,0 t60,0' stroke='#6b4a2a' stroke-width='1.4'/>
+        <path d='M0,17 q35,-3 70,0 t70,0' stroke='#6b4a2a' stroke-width='1'/>
+        <path d='M0,30 q24,5 48,0 t48,0 t48,0' stroke='#5a3c20' stroke-width='1.7'/>
+        <path d='M0,41 q30,-4 60,0 t60,0' stroke='#6b4a2a' stroke-width='1'/>
+        <path d='M0,51 q40,3 80,0 t80,0' stroke='#6b4a2a' stroke-width='1.3'/>
+        <ellipse cx='34' cy='30' rx='7' ry='3.4' stroke='#5a3c20' stroke-width='1.1'/>
+        <ellipse cx='34' cy='30' rx='3' ry='1.4' stroke='#5a3c20' stroke-width='0.9'/>
+      </g></svg>`),
+  },
+  {
+    id: "linen", name: "Linen weave", colors: 2, defaults: ["#9a8a6a", "#7a6a4a"], opacity: 0.14, size: "18px 18px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'>
+      <g stroke-width='2.4'><path d='M4,0 V18 M13,0 V18' stroke='${c[0]}'/><path d='M0,4 H18 M0,13 H18' stroke='${c[1]}'/></g></svg>`),
+  },
+  {
+    id: "trellis", name: "Moorish trellis", colors: 2, defaults: ["#c9a24a", "#7a5a1e"], opacity: 0.16, size: "44px 44px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'>
+      <g fill='none' stroke='${c[0]}' stroke-width='1.6'>
+        <path d='M22,0 C34,9 34,35 22,44 C10,35 10,9 22,0'/>
+        <path d='M0,22 C9,10 35,10 44,22 C35,34 9,34 0,22'/></g>
+      <circle cx='22' cy='22' r='2.4' fill='${c[1]}'/></svg>`),
+  },
+  {
+    id: "fleur", name: "Fleur-de-lis", colors: 1, defaults: ["#c9a24a"], opacity: 0.13, size: "48px 48px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'>
+      <g fill='${c[0]}' transform='translate(4,3)'>
+        <path d='M20,2 C16,9 16,16 20,21 C24,16 24,9 20,2 Z'/>
+        <path d='M20,16 C13,12 7,17 10,24 C13,29 18,24 20,21 Z'/>
+        <path d='M20,16 C27,12 33,17 30,24 C27,29 22,24 20,21 Z'/>
+        <rect x='14' y='24' width='12' height='3' rx='1.5'/>
+        <path d='M20,27 C17,33 17,38 20,42 C23,38 23,33 20,27 Z'/></g></svg>`),
+  },
+  {
+    id: "deco", name: "Deco fans", colors: 2, defaults: ["#c9a24a", "#2d4a6a"], opacity: 0.16, size: "48px 48px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'>
+      <g fill='none' stroke-linecap='round' stroke-width='1.3'>
+        <path d='M0,48 A16,16 0 0 1 16,32 M0,48 A30,30 0 0 1 30,18 M0,48 A44,44 0 0 1 44,4' stroke='${c[0]}'/>
+        <path d='M48,0 A16,16 0 0 1 32,16 M48,0 A30,30 0 0 1 18,30 M48,0 A44,44 0 0 1 4,44' stroke='${c[1]}'/></g></svg>`),
+  },
+  {
+    id: "sunburst", name: "Deco sunburst", colors: 2, defaults: ["#c9a24a", "#b06a2a"], opacity: 0.16, size: "80px 60px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='80' height='60'>
+      <g fill='none' stroke='${c[0]}' stroke-width='1.2' stroke-linecap='round'>
+        <path d='M40,58 V4 M40,58 L22,9 M40,58 L58,9 M40,58 L8,20 M40,58 L72,20 M40,58 L3,36 M40,58 L77,36'/></g>
+      <path d='M12,58 A28,28 0 0 1 68,58' fill='none' stroke='${c[1]}' stroke-width='1.8'/></svg>`),
+  },
+  {
+    id: "ziggurat", name: "Deco ziggurat", colors: 2, defaults: ["#c9a24a", "#2d4a6a"], opacity: 0.16, size: "48px 48px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'>
+      <path d='M0,48 V40 H12 V32 H18 V24 H22 V16 H26 V24 H30 V32 H36 V40 H48 V48' fill='none' stroke='${c[0]}' stroke-width='1.4'/>
+      <path d='M24,16 L28,9 L20,9 Z' fill='${c[1]}' stroke='none'/></svg>`),
+  },
+  {
+    id: "grille", name: "Deco grille", colors: 2, defaults: ["#c9a24a", "#2d4a6a"], opacity: 0.16, size: "40px 48px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48'>
+      <g stroke='${c[0]}' stroke-width='1.1' fill='none'><path d='M8,0 V48 M20,0 V48 M32,0 V48'/></g>
+      <g fill='${c[1]}'><path d='M20,6 l5,6 l-5,6 l-5,-6 z'/><path d='M20,30 l5,6 l-5,6 l-5,-6 z'/><path d='M8,21 l4,5 l-4,5 l-4,-5 z'/><path d='M32,21 l4,5 l-4,5 l-4,-5 z'/></g></svg>`),
+  },
+  {
+    id: "medallion", name: "Deco medallion", colors: 2, defaults: ["#c9a24a", "#2d4a6a"], opacity: 0.15, size: "48px 48px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'>
+      <g fill='none' stroke='${c[0]}' stroke-width='2.2' stroke-linejoin='round'>
+        <path d='M24,2 L40,24 L24,46 L8,24 Z'/><path d='M24,12 L33,24 L24,36 L15,24 Z'/><path d='M24,2 V46 M8,24 H40' stroke-width='1.2'/></g>
+      <circle cx='24' cy='24' r='2.6' fill='${c[1]}'/></svg>`),
+  },
+  {
+    id: "terrazzo", name: "Terrazzo", colors: 1, defaults: ["#5a8f6a"], opacity: 0.22, size: "90px 90px",
+    gen: () => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90'>
+      <circle cx='14' cy='18' r='4' fill='#d98a30'/><rect x='44' y='10' width='8' height='6' rx='1' fill='#4e8fa8' transform='rotate(18 48 13)'/>
+      <circle cx='70' cy='22' r='3.4' fill='#c95a4a'/><path d='M26,46 l7,2 l-2,7 z' fill='#c9a24a'/>
+      <circle cx='60' cy='52' r='5' fill='#5a8f6a'/><rect x='10' y='62' width='7' height='5' rx='1' fill='#7a5aa8' transform='rotate(-15 13 64)'/>
+      <circle cx='80' cy='70' r='3.6' fill='#d98a30'/><path d='M44,72 l6,3 l-4,6 z' fill='#4e8fa8'/>
+      <circle cx='34' cy='30' r='2.4' fill='#c95a4a'/><circle cx='52' cy='38' r='2' fill='#c9a24a'/></svg>`),
+  },
+  {
+    id: "blueprint", name: "Blueprint", colors: 1, defaults: ["#4e8fb0"], opacity: 0.13, size: "48px 48px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'>
+      <g stroke='${c[0]}' fill='none'>
+        <path d='M0,0 H48 M0,0 V48' stroke-width='1'/>
+        <path d='M12,0 V48 M24,0 V48 M36,0 V48 M0,12 H48 M0,24 H48 M0,36 H48' stroke-width='0.4' opacity='0.7'/>
+        <path d='M21,24 H27 M24,21 V27' stroke-width='0.8'/></g></svg>`),
+  },
+  {
+    id: "quatrefoil", name: "Quatrefoil", colors: 2, defaults: ["#4ea872", "#2d5a3f"], opacity: 0.15, size: "48px 48px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'>
+      <g fill='none' stroke='${c[0]}' stroke-width='1.4'>
+        <circle cx='24' cy='16' r='8'/><circle cx='32' cy='24' r='8'/><circle cx='24' cy='32' r='8'/><circle cx='16' cy='24' r='8'/>
+        <path d='M8 0 A8 8 0 0 1 0 8'/><path d='M40 0 A8 8 0 0 0 48 8'/><path d='M8 48 A8 8 0 0 0 0 40'/><path d='M40 48 A8 8 0 0 1 48 40'/></g>
+      <circle cx='24' cy='24' r='2' fill='${c[1]}'/></svg>`),
+  },
+  {
+    id: "ribbon", name: "Ribbon weave", colors: 2, defaults: ["#4ea872", "#c9a24a"], opacity: 0.16, size: "48px 24px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='48' height='24'>
+      <g fill='none' stroke-width='1.5' stroke-linecap='round'>
+        <path d='M0 12 C8 2 16 2 24 12 C32 22 40 22 48 12' stroke='${c[0]}'/>
+        <path d='M0 12 C8 22 16 22 24 12 C32 2 40 2 48 12' stroke='${c[1]}'/></g></svg>`),
+  },
+  {
+    id: "ogee", name: "Ogee lattice", colors: 2, defaults: ["#4ea872", "#c9a24a"], opacity: 0.15, size: "44px 52px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='44' height='52'>
+      <g fill='none' stroke='${c[0]}' stroke-width='1.5' stroke-linecap='round'>
+        <path d='M22 4 C6 15 6 31 22 48 C38 31 38 15 22 4 Z'/>
+        <path d='M12 0 Q22 7 32 0'/><path d='M12 52 Q22 45 32 52'/></g>
+      <circle cx='22' cy='26' r='2.4' fill='${c[1]}'/></svg>`),
+  },
+  {
+    id: "laurel", name: "Laurel sprig", colors: 2, defaults: ["#4ea872", "#2d5a3f"], opacity: 0.16, size: "46px 46px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='46' height='46'>
+      <g fill='${c[0]}'>
+        <path d='M23 10 q-8 -2 -11 4 q7 3 11 -4Z'/><path d='M23 10 q8 -2 11 4 q-7 3 -11 -4Z'/>
+        <path d='M23 22 q-9 -2 -12 4 q8 3 12 -4Z'/><path d='M23 22 q9 -2 12 4 q-8 3 -12 -4Z'/>
+        <path d='M23 34 q-7 -2 -10 3 q6 3 10 -3Z'/><path d='M23 34 q7 -2 10 3 q-6 3 -10 -3Z'/></g>
+      <path d='M23 5 V41' fill='none' stroke='${c[1]}' stroke-width='1'/></svg>`),
+  },
+  {
+    id: "stars", name: "Celestial", colors: 2, defaults: ["#c9a24a", "#4e8fb0"], opacity: 0.18, size: "60px 60px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'>
+      <g fill='${c[0]}'>
+        <path d='M15 8 Q15 15 22 15 Q15 15 15 22 Q15 15 8 15 Q15 15 15 8Z'/>
+        <path d='M44 40 Q44 48 52 48 Q44 48 44 56 Q44 48 36 48 Q44 48 44 40Z'/></g>
+      <g fill='${c[1]}'>
+        <path d='M42 12 Q42 17 47 17 Q42 17 42 22 Q42 17 37 17 Q42 17 42 12Z'/>
+        <circle cx='28' cy='30' r='1.5'/><circle cx='10' cy='46' r='1.3'/><circle cx='54' cy='24' r='1.2'/><circle cx='24' cy='53' r='1.3'/></g></svg>`),
+  },
+  {
+    id: "scales", name: "Scales", colors: 2, defaults: ["#4ea872", "#3a7252"], opacity: 0.18, size: "40px 20px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='40' height='20'>
+      <path d='M0 20 A20 20 0 0 1 40 20' fill='none' stroke='${c[0]}' stroke-width='2'/>
+      <path d='M-20 20 A20 20 0 0 1 20 20' fill='none' stroke='${c[1]}' stroke-width='2'/>
+      <path d='M20 20 A20 20 0 0 1 60 20' fill='none' stroke='${c[1]}' stroke-width='2'/></svg>`),
+  },
+  {
+    id: "dots", name: "Dots", colors: 2, defaults: ["#4ea872", "#d4a93a"], opacity: 0.2, size: "30px 30px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'>
+      <circle cx='8' cy='8' r='3.5' fill='${c[0]}'/><circle cx='23' cy='23' r='3.5' fill='${c[1]}'/></svg>`),
+  },
+  {
+    id: "rosette", name: "Rosette", colors: 2, defaults: ["#4ea872", "#c9a24a"], opacity: 0.15, size: "46px 46px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='46' height='46'>
+      <g fill='${c[0]}' transform='translate(23,23)'>
+        <ellipse cx='0' cy='-9' rx='3.4' ry='7'/><ellipse cx='0' cy='-9' rx='3.4' ry='7' transform='rotate(60)'/><ellipse cx='0' cy='-9' rx='3.4' ry='7' transform='rotate(120)'/>
+        <ellipse cx='0' cy='-9' rx='3.4' ry='7' transform='rotate(180)'/><ellipse cx='0' cy='-9' rx='3.4' ry='7' transform='rotate(240)'/><ellipse cx='0' cy='-9' rx='3.4' ry='7' transform='rotate(300)'/></g>
+      <circle cx='23' cy='23' r='3' fill='${c[1]}'/>
+      <g fill='${c[1]}'><circle cx='23' cy='1' r='1.5'/><circle cx='23' cy='45' r='1.5'/><circle cx='1' cy='23' r='1.5'/><circle cx='45' cy='23' r='1.5'/></g></svg>`),
+  },
+  {
+    id: "arabesque", name: "Arabesque", colors: 2, defaults: ["#c9a24a", "#4ea872"], opacity: 0.14, size: "48px 48px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'>
+      <g transform='translate(24,24)' fill='none' stroke='${c[0]}' stroke-width='1.4' stroke-linecap='round'>
+        <path d='M0 -4 C0 -12 9 -12 9 -19 C9 -23 5 -23 5.5 -19.5'/><path d='M0 -4 C0 -12 9 -12 9 -19 C9 -23 5 -23 5.5 -19.5' transform='rotate(90)'/>
+        <path d='M0 -4 C0 -12 9 -12 9 -19 C9 -23 5 -23 5.5 -19.5' transform='rotate(180)'/><path d='M0 -4 C0 -12 9 -12 9 -19 C9 -23 5 -23 5.5 -19.5' transform='rotate(270)'/></g>
+      <circle cx='24' cy='24' r='2.4' fill='${c[1]}'/></svg>`),
+  },
+]
+
+const HYPE_PATTERNS = [
+  { id: "none", name: "None", colors: 1, defaults: ["#2fd8c6"], opacity: 0, size: "0", gen: () => "none" },
+  { id: "hdots", name: "Fine dots", colors: 1, defaults: ["#2fd8c6"], opacity: 0.11, size: "16px 16px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><circle cx='3' cy='3' r='1.1' fill='${c[0]}'/></svg>`) },
+  { id: "hgrid", name: "Hairline grid", colors: 1, defaults: ["#2fd8c6"], opacity: 0.1, size: "32px 32px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><path d='M32 0H0V32' fill='none' stroke='${c[0]}' stroke-width='0.8'/></svg>`) },
+  { id: "hgraph", name: "Graph paper", colors: 1, defaults: ["#2fd8c6"], opacity: 0.1, size: "40px 40px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><g stroke='${c[0]}' fill='none'><path d='M40 0H0V40' stroke-width='1'/><path d='M10 0V40M20 0V40M30 0V40M0 10H40M0 20H40M0 30H40' stroke-width='0.4' opacity='0.55'/></g></svg>`) },
+  { id: "hscan", name: "Scanlines", colors: 1, defaults: ["#2fd8c6"], opacity: 0.12, size: "6px 6px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><path d='M0 5H6' stroke='${c[0]}' stroke-width='1'/></svg>`) },
+  { id: "hplus", name: "Plus ticks", colors: 1, defaults: ["#2fd8c6"], opacity: 0.12, size: "22px 22px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22'><path d='M11 7V15M7 11H15' stroke='${c[0]}' stroke-width='1' stroke-linecap='round'/></svg>`) },
+  { id: "hrings", name: "Rings", colors: 1, defaults: ["#2fd8c6"], opacity: 0.12, size: "26px 26px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26'><circle cx='13' cy='13' r='4.5' fill='none' stroke='${c[0]}' stroke-width='1'/></svg>`) },
+  { id: "hhatch", name: "Hatch", colors: 1, defaults: ["#2fd8c6"], opacity: 0.12, size: "14px 14px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14'><path d='M4 4L10 10M10 4L4 10' stroke='${c[0]}' stroke-width='0.9' stroke-linecap='round'/></svg>`) },
+  { id: "hdash", name: "Dashes", colors: 1, defaults: ["#2fd8c6"], opacity: 0.12, size: "20px 16px",
+    gen: (c) => uri(`<svg xmlns='http://www.w3.org/2000/svg' width='20' height='16'><g stroke='${c[0]}' stroke-width='1' stroke-linecap='round'><path d='M2 4H8'/><path d='M12 12H18'/></g></svg>`) },
+]
+
+const FRAME_KEYS = ["--page-pad", "--page-max", "--frame-border", "--frame-radius", "--frame-pad", "--frame-bg"]
+const FRAMES = [
+  { id: "edge", name: "Edge to edge", vars: { "--page-pad": "12px 14px", "--page-max": "none", "--frame-border": "0", "--frame-radius": "0", "--frame-pad": "0", "--frame-bg": "transparent" } },
+  { id: "snug", name: "Snug", vars: { "--page-pad": "20px 24px", "--page-max": "1320px", "--frame-border": "0", "--frame-radius": "0", "--frame-pad": "0", "--frame-bg": "transparent" } },
+  { id: "comfortable", name: "Comfortable", vars: { "--page-pad": "32px 44px", "--page-max": "1180px", "--frame-border": "0", "--frame-radius": "0", "--frame-pad": "0", "--frame-bg": "transparent" } },
+  { id: "spacious", name: "Spacious", vars: { "--page-pad": "52px 76px", "--page-max": "1080px", "--frame-border": "0", "--frame-radius": "0", "--frame-pad": "0", "--frame-bg": "transparent" } },
+  { id: "framed", name: "Framed card", vars: { "--page-pad": "26px 34px", "--page-max": "1200px", "--frame-border": "1px solid var(--border-default)", "--frame-radius": "20px", "--frame-pad": "24px", "--frame-bg": "var(--bg-card)" } },
+  { id: "inset", name: "Accent inset", vars: { "--page-pad": "26px 36px", "--page-max": "1160px", "--frame-border": "1px solid var(--border-accent)", "--frame-radius": "18px", "--frame-pad": "22px", "--frame-bg": "transparent" } },
+]
+function frameVars(id) {
+  return (FRAMES.find(f => f.id === id) || FRAMES[1]).vars
+}
+function shade(hex, p) {
+  const n = parseInt(hex.replace("#", ""), 16)
+  const f = (v) => Math.round(Math.min(255, Math.max(0, v + 255 * (p / 100))))
+  const r = f((n >> 16) & 255), g = f((n >> 8) & 255), b = f(n & 255)
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+}
+function hexToRgba(hex, a) {
+  const n = parseInt(hex.replace("#", ""), 16)
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`
+}
+function buildVars(textureId, colors) {
+  const pat = PATTERNS.find(p => p.id === textureId) || PATTERNS[0]
+  const main = colors[0] || "#4ea872"
+  const vars = {
+    "--accent": shade(main, -22),
+    "--accent-hover": shade(main, -6),
+    "--accent-bright": main,
+    "--accent-glow": hexToRgba(main, 0.15),
+    "--text-accent": main,
+    "--border-accent": hexToRgba(main, 0.4),
+    "--glass-border": hexToRgba(main, 0.18),
+  }
+  if (pat.id === "none") {
+    vars["--app-texture"] = "none"; vars["--app-texture-opacity"] = "0"; vars["--app-texture-size"] = "0"
+  } else {
+    vars["--app-texture"] = pat.gen(colors); vars["--app-texture-opacity"] = String(pat.opacity); vars["--app-texture-size"] = pat.size
+  }
+  return vars
+}
+function hypeVars(textureId, color) {
+  if (!textureId || textureId === "none") {
+    return { "--hype-texture": "none", "--hype-texture-size": "auto", "--hype-tex-floor": "0" }
+  }
+  const pat = HYPE_PATTERNS.find(p => p.id === textureId) || HYPE_PATTERNS[0]
+  const c = color || "#2fd8c6"
+  const cols = [c, shade(c, -26), shade(c, 16), shade(c, -42)].slice(0, Math.max(1, pat.colors))
+  return { "--hype-texture": pat.gen(cols), "--hype-texture-size": pat.size, "--hype-tex-floor": String(Math.max(0.08, pat.opacity)) }
+}
+function applyVars(vars) {
+  for (const k in vars) document.documentElement.style.setProperty(k, vars[k])
+}
+
+// ── storage shim: lib/prefs.ts's pget/pset namespace per-profile keys under
+// several real localStorage entries. The brief asks for ONE consolidated key
+// ('accord-demo-look') for this single-profile demo, so pget/pset below read
+///write SUB-keys of one JSON blob instead — uilook.ts's own logic (next) is
+// untouched. ──
+const DEMO_STORE_KEY = "accord-demo-look"
+function __loadBlob() { try { const r = localStorage.getItem(DEMO_STORE_KEY); return r ? JSON.parse(r) : {} } catch (e) { return {} } }
+function __saveBlob(b) { try { localStorage.setItem(DEMO_STORE_KEY, JSON.stringify(b)) } catch (e) {} }
+function pget(key) { const b = __loadBlob(); return (key in b) ? b[key] : null }
+function pset(key, val) { const b = __loadBlob(); b[key] = val; __saveBlob(b) }
+const __isFirstVisit = (function () { try { return localStorage.getItem(DEMO_STORE_KEY) === null } catch (e) { return true } })()
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UI look: moods, borders, button styles, heading fonts, and the mode/glow/texture classes.
+// ═══════════════════════════════════════════════════════════════════════════
+const UI_DEFAULT = { mood: "default", border: "default", btn: "solid", heading: "mono", sideTint: false }
+const MOODS = [
+  { id: "default", name: "Forest", swatch: "#0a0e0c", vars: {} },
+  { id: "black", name: "True Black", swatch: "#000000", vars: { "--bg-base": "#000000", "--bg-elevated": "#0b0b0d", "--bg-card": "#131316", "--bg-card-hover": "#1c1c20" } },
+  { id: "charcoal", name: "Warm Charcoal", swatch: "#201a14", vars: { "--bg-base": "#15110d", "--bg-elevated": "#201a14", "--bg-card": "#28211a", "--bg-card-hover": "#322a20" } },
+  { id: "slate", name: "Cool Slate", swatch: "#1a222b", vars: { "--bg-base": "#0b0f14", "--bg-elevated": "#131a21", "--bg-card": "#1a222b", "--bg-card-hover": "#232d37" } },
+  { id: "deepforest", name: "Deep Forest", swatch: "#16271c", vars: { "--bg-base": "#08120c", "--bg-elevated": "#0f1c14", "--bg-card": "#16271c", "--bg-card-hover": "#1e3325" } },
+]
+const BORDERS = [
+  { id: "soft", name: "Soft", vars: { "--border-subtle": "rgba(255,255,255,0.035)", "--border-default": "rgba(255,255,255,0.06)", "--border-strong": "rgba(255,255,255,0.1)" } },
+  { id: "default", name: "Default", vars: {} },
+  { id: "crisp", name: "Crisp", vars: { "--border-subtle": "rgba(255,255,255,0.1)", "--border-default": "rgba(255,255,255,0.2)", "--border-strong": "rgba(255,255,255,0.32)" } },
+]
+const BTNS = [
+  { id: "solid", name: "Solid", cls: "" },
+  { id: "soft", name: "Soft", cls: "btn-soft" },
+  { id: "outline", name: "Outline", cls: "btn-outline" },
+]
+const HEAD_FONTS = [
+  { id: "mono", name: "Mono", css: "" },
+  { id: "grotesk", name: "Grotesk", css: "var(--font-grotesk)" },
+  { id: "serif", name: "Serif", css: "var(--font-serif), Georgia, serif" },
+  { id: "hand", name: "Handwritten", css: "var(--font-hand), cursive" },
+]
+const LOOK_GROUPS = {
+  mode: ["hype", "calm"],
+  glow: ["glow-lo", "glow-med", "glow-hi"],
+  tex: ["tex-honey", "tex-dots", "tex-grid", "tex-off"],
+  texint: ["tint-lo", "tint-med", "tint-hi"],
+  font: ["font-modern", "font-cyber", "font-editorial"],
+}
+const LOOK_CLASSES = Object.values(LOOK_GROUPS).flat()
+const ALL_CLASSES = ["btn-soft", "btn-outline", "side-tint", ...LOOK_CLASSES]
+function getUiClasses() {
+  try { const r = pget("accord-ui-classes"); if (r) { const a = JSON.parse(r); if (Array.isArray(a)) return a } } catch (e) {}
+  return []
+}
+function getLook(group) {
+  const opts = LOOK_GROUPS[group] || []
+  return getUiClasses().find(c => opts.includes(c)) || ""
+}
+function setLook(group, value) {
+  const opts = LOOK_GROUPS[group] || []
+  opts.forEach(c => document.documentElement.classList.remove(c))
+  if (value) document.documentElement.classList.add(value)
+  const cls = getUiClasses().filter(c => !opts.includes(c))
+  if (value) cls.push(value)
+  pset("accord-ui-classes", JSON.stringify(cls))
+}
+function buildUiVars(ui) {
+  const vars = {}
+  Object.assign(vars, (MOODS.find(m => m.id === ui.mood) || {}).vars || {})
+  Object.assign(vars, (BORDERS.find(b => b.id === ui.border) || {}).vars || {})
+  const h = HEAD_FONTS.find(x => x.id === ui.heading)
+  if (h && h.css) vars["--font-display"] = h.css
+  return vars
+}
+function uiClasses(ui) {
+  const cls = []
+  const b = BTNS.find(x => x.id === ui.btn)
+  if (b && b.cls) cls.push(b.cls)
+  if (ui.sideTint) cls.push("side-tint")
+  return cls
+}
+function applyUiLook(ui) {
+  const vars = buildUiVars(ui)
+  for (const k of ["--bg-base", "--bg-elevated", "--bg-card", "--bg-card-hover", "--border-subtle", "--border-default", "--border-strong", "--font-display"]) {
+    if (!(k in vars)) document.documentElement.style.removeProperty(k)
+  }
+  applyVars(vars)
+  const look = getUiClasses().filter(c => LOOK_CLASSES.includes(c))
+  const next = [...look, ...uiClasses(ui)]
+  ALL_CLASSES.forEach(c => document.documentElement.classList.remove(c))
+  next.forEach(c => document.documentElement.classList.add(c))
+  pset("accord-ui", JSON.stringify(ui))
+  pset("accord-ui-vars", JSON.stringify(vars))
+  pset("accord-ui-classes", JSON.stringify(next))
+}
+function loadUi() {
+  try { const r = pget("accord-ui"); if (r) return Object.assign({}, UI_DEFAULT, JSON.parse(r)) } catch (e) {}
+  return Object.assign({}, UI_DEFAULT)
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Look settings: FONTS / PRESETS / ACCENT_SWATCHES and the apply/pick
+// functions, kept in one single-profile `demoTheme` object.
+// ═══════════════════════════════════════════════════════════════════════════
+const FONTS = [
+  { key: "default", name: "Grotesk", css: "" },
+  { key: "serif", name: "Serif", css: "var(--font-serif), Georgia, serif" },
+  { key: "clean", name: "Clean", css: "var(--font-geist-sans), system-ui, sans-serif" },
+  { key: "mono", name: "Mono", css: "var(--font-space-mono), ui-monospace, monospace" },
+  { key: "hand", name: "Handwritten", css: "var(--font-hand), cursive" },
+]
+const PRESETS = [
+  { name: "Forest", icon: "🌿", texture: "none", colors: ["#4ea872"], font: "default" },
+  { name: "Starry Night", icon: "🌌", texture: "vangogh", colors: ["#2766a8"], font: "default" },
+  { name: "Antique Gold", icon: "🥇", texture: "trellis", colors: ["#c9a24a", "#7a5a1e"], font: "serif" },
+  { name: "Rustic Wood", icon: "🪵", texture: "wood", colors: ["#8a5a3c"], font: "serif" },
+  { name: "Slate Modern", icon: "◆", texture: "blueprint", colors: ["#4e8fb0"], font: "clean" },
+  { name: "Deco Rose", icon: "🌹", texture: "medallion", colors: ["#c0607a", "#2d4a6a"], font: "serif" },
+  { name: "Terrazzo", icon: "🎨", texture: "terrazzo", colors: ["#5a8f6a"], font: "default" },
+]
+const ACCENT_SWATCHES = ["#4ea872", "#3a9f6e", "#60a0f0", "#7c9cf5", "#c9a24a", "#e0884e", "#c0607a", "#9b59b6", "#4e8fa8", "#8a5a3c"]
+
+const demoTheme = { texture: "none", colors: ["#4ea872"], frame: "snug", font: "default", hypeTex: "none", hypeColor: "#2fd8c6" }
+function loadThemeCfg() {
+  const raw = pget("accord-theme-cfg")
+  if (raw) {
+    try {
+      const c = JSON.parse(raw)
+      demoTheme.texture = c.texture || "none"; demoTheme.colors = c.colors || ["#4ea872"]; demoTheme.frame = c.frame || "snug"
+      demoTheme.font = c.font || "default"; demoTheme.hypeTex = c.hypeTex || "none"; demoTheme.hypeColor = c.hypeColor || "#2fd8c6"
+      return
+    } catch (e) {}
+  }
+}
+function applyAll() {
+  const tv = Object.assign({}, buildVars(demoTheme.texture, demoTheme.colors), hypeVars(demoTheme.hypeTex, demoTheme.hypeColor))
+  if (demoTheme.texture === "none") { ["--app-texture", "--app-texture-opacity", "--app-texture-size"].forEach(function (k) { delete tv[k]; document.documentElement.style.removeProperty(k) }) }
+  const f = FONTS.find(function (x) { return x.key === demoTheme.font })
+  if (f && f.css) tv["--font-sans"] = f.css; else document.documentElement.style.removeProperty("--font-sans")
+  applyVars(tv)
+  pset("accord-theme-vars", JSON.stringify(tv))
+  const fv = frameVars(demoTheme.frame)
+  applyVars(fv)
+  pset("accord-frame-vars", JSON.stringify(fv))
+  pset("accord-theme-cfg", JSON.stringify(demoTheme))
+}
+function pickHypePattern(id) { demoTheme.hypeTex = id; applyAll() }
+function setHypeCol(v) { demoTheme.hypeColor = v; applyAll() }
+function pickPattern(pid) {
+  const pat = PATTERNS.find(function (p) { return p.id === pid })
+  const cols = []
+  for (let i = 0; i < pat.colors; i++) cols.push(demoTheme.colors[i] || pat.defaults[i])
+  demoTheme.texture = pid; demoTheme.colors = cols
+  applyAll()
+}
+function setColor(i, v) {
+  const cols = demoTheme.colors.slice(); cols[i] = v; demoTheme.colors = cols
+  applyAll()
+}
+function pickFont(fnt) { demoTheme.font = fnt; applyAll() }
+function applyLook(p) {
+  demoTheme.texture = p.texture; demoTheme.colors = p.colors.slice(); demoTheme.font = p.font || "default"
+  applyAll()
+}
+function pickFrame(fid) { demoTheme.frame = fid; applyAll() }
+function clearTheme() { demoTheme.texture = "none"; demoTheme.colors = [demoTheme.colors[0] || "#4ea872"]; applyAll() }
+function setUiLook(patch) { applyUiLook(Object.assign({}, loadUi(), patch)) }
+
+// ── pre-paint bootstrap: apply saved look, or DEFAULT LOOK on first visit
+// (Rustic Wood + glow-med + tint-med + mode default + frame snug + mood default) ──
+loadThemeCfg()
+if (__isFirstVisit) {
+  demoTheme.texture = "wood"; demoTheme.colors = ["#8a5a3c"]; demoTheme.frame = "snug"; demoTheme.font = "serif"
+  setLook("glow", "glow-med")
+  setLook("texint", "tint-med")
+}
+applyAll()
+applyUiLook(loadUi())
+</script>
+<style id="demo-chrome-fixes">
+/* demo chrome: keep the page header clear of the fixed back link; on phones the badge becomes a bottom strip */
+.corner-back{ white-space:nowrap; }
+.app-main{ padding-top:72px !important; }
+@media (max-width:700px){
+  .app-main{ padding-top:64px !important; padding-bottom:56px !important; }
+  .corner-plaque{ left:0; right:0; bottom:0; max-width:none; border-radius:0; text-align:center; font-size:0; padding:7px 10px; }
+  .corner-plaque::before{ content:attr(data-short); font-size:9px; letter-spacing:.14em; }
+}
+</style>
+</head>
+<body>
+<a class="corner-back" href="../../">← BACK TO THE FORGE</a>
+
+<main class="dashboard-bg app-main">
+  <div class="app-canvas" style="max-width:var(--page-max,none);margin:0 auto;border:var(--frame-border,0);border-radius:var(--frame-radius,0);padding:var(--frame-pad,0);background:var(--frame-bg,transparent)">
+
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px">
+      <div>
+        <div class="label">HEARTH</div>
+        <h1 class="mono-heading" style="font-size:22px;margin:4px 0 0">Cockpit</h1>
+      </div>
+      <button type="button" id="look-open-btn" class="btn-ghost" style="flex-shrink:0;min-height:44px">◐ Look</button>
+    </div>
+
+    <div class="cockpit-root dash-fade">
+
+      <!-- ===== Command bar ===== -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="label" title="Cockpit AI — ask anything; routed through a self-hosted assistant">✦ Cockpit AI</div>
+        <div style="position:relative;display:flex;align-items:center;gap:13px;padding:15px 18px;border-radius:14px;background:linear-gradient(168deg, var(--bg-card), var(--bg-elevated));border:1px solid var(--border-default);box-shadow:var(--shadow-card), var(--glowbox, none)">
+          <span style="font-size:18px;color:var(--accent-bright);filter:drop-shadow(0 0 7px var(--accent-glow))">✦</span>
+          <input id="cmd-input" type="text" placeholder='Ask Arvis…   (try &quot;plan my day&quot;)' aria-label="Ask Arvis" style="flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text-primary);font-size:16px;font-family:inherit">
+          <span class="hide-narrow" style="font-size:11px;color:var(--text-tertiary);border:1px solid var(--border-default);border-radius:6px;padding:3px 7px;font-family:var(--font-mono);flex-shrink:0">⌘ /</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button type="button" class="cmd-chip" data-q="plan my day" style="font-size:12px;color:var(--text-secondary);background:var(--bg-card);border:1px solid var(--border-default);border-radius:var(--radius-pill);padding:5px 12px;cursor:pointer">plan my day</button>
+          <button type="button" class="cmd-chip" data-q="log 3 goat kids born today" style="font-size:12px;color:var(--text-secondary);background:var(--bg-card);border:1px solid var(--border-default);border-radius:var(--radius-pill);padding:5px 12px;cursor:pointer">log 3 goat kids born today</button>
+          <button type="button" class="cmd-chip" data-q="plan my week" style="font-size:12px;color:var(--text-secondary);background:var(--bg-card);border:1px solid var(--border-default);border-radius:var(--radius-pill);padding:5px 12px;cursor:pointer">plan my week</button>
+          <button type="button" class="cmd-chip" data-q="draft the next chapter" style="font-size:12px;color:var(--text-secondary);background:var(--bg-card);border:1px solid var(--border-default);border-radius:var(--radius-pill);padding:5px 12px;cursor:pointer">draft the next chapter</button>
+          <button type="button" class="cmd-chip" data-q="what's overdue in the garden?" style="font-size:12px;color:var(--text-secondary);background:var(--bg-card);border:1px solid var(--border-default);border-radius:var(--radius-pill);padding:5px 12px;cursor:pointer">what's overdue in the garden?</button>
+        </div>
+        <div id="cmd-reply" hidden role="status" style="margin-top:14px;padding:14px 16px;background:linear-gradient(var(--bg-elevated), var(--bg-card));border:1px solid var(--border-accent);border-left:3px solid var(--accent-bright);border-radius:13px;font-size:14px;color:var(--text-secondary);box-shadow:var(--glowbox, none)">
+          <div id="cmd-reply-q" style="color:var(--text-tertiary);font-size:12px;margin-bottom:8px;font-family:var(--font-mono)"></div>
+          <div style="white-space:pre-wrap;color:var(--text-primary);line-height:1.55">Demo: in the full app this is answered by a self-hosted assistant grounded in today's data.</div>
+          <div style="color:var(--text-tertiary);font-size:11px;margin-top:10px;display:flex;align-items:center;gap:6px"><span style="color:var(--accent-bright)">✦</span> ARVIS</div>
+        </div>
+      </div>
+
+      <div class="cockpit-grid">
+
+        <!-- ===== NOW hero ===== -->
+        <div class="card zone green" style="grid-row:span 2;display:flex;flex-direction:column;gap:16px">
+          <div class="label" title="Now — your live focus block and countdown">Now</div>
+          <div id="now-focus" style="font-size:20px;font-weight:600;color:var(--text-primary)">Open time</div>
+
+          <div style="display:flex;align-items:center;gap:22px;margin:4px 0">
+            <div id="ring" style="width:124px;height:124px;border-radius:50%;flex:none;display:grid;place-items:center;position:relative;background:conic-gradient(var(--accent-bright) 0%, var(--status-grey-bg) 0)">
+              <div style="position:absolute;inset:9px;border-radius:50%;background:radial-gradient(var(--bg-card), var(--bg-elevated));box-shadow:inset 0 2px 9px rgba(0,0,0,0.55)"></div>
+              <div style="position:relative;z-index:1;text-align:center">
+                <b id="ring-left" style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:27px;display:block;letter-spacing:-1px;color:var(--text-primary)">--:--</b>
+                <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary)">left</span>
+              </div>
+            </div>
+            <div style="min-width:0">
+              <div style="color:var(--text-secondary);font-size:14px">next ▸ <b id="next-label" style="color:var(--text-primary)">—</b><span id="next-time-wrap" hidden> · <span id="next-time" style="font-family:var(--font-mono);font-variant-numeric:tabular-nums"></span></span></div>
+              <div id="then-wrap" hidden style="color:var(--text-secondary);font-size:14px;margin-top:7px">then ▸ <span id="then-label"></span> · <span id="then-time" style="font-family:var(--font-mono);font-variant-numeric:tabular-nums"></span></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="label" title="Today's shape — today's scheduled time blocks" style="margin-bottom:9px">Today's shape</div>
+            <div id="shape-rows" style="display:flex;flex-direction:column;gap:4px"></div>
+          </div>
+        </div>
+
+        <!-- ===== Top 3 today ===== -->
+        <div class="card zone green">
+          <div class="label" title="Top 3 today — your highest-priority open cards">Top 3 today</div>
+          <ul style="list-style:none;margin-top:4px">
+            <li class="top3-item" style="display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--border-subtle);font-size:15px;color:var(--text-primary)">
+              <span class="top3-box" style="width:22px;height:22px;border:2px solid var(--border-default);border-radius:7px;flex-shrink:0;display:inline-block"></span>
+              <span class="top3-text" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Fix the north fence line</span>
+            </li>
+            <li class="top3-item" style="display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--border-subtle);font-size:15px;color:var(--text-primary)">
+              <span class="top3-box" style="width:22px;height:22px;border:2px solid var(--border-default);border-radius:7px;flex-shrink:0;display:inline-block"></span>
+              <span class="top3-text" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Order fall garlic</span>
+            </li>
+            <li class="top3-item" style="display:flex;align-items:center;gap:13px;padding:12px 0;font-size:15px;color:var(--text-primary)">
+              <span class="top3-box" style="width:22px;height:22px;border:2px solid var(--border-default);border-radius:7px;flex-shrink:0;display:inline-block"></span>
+              <span class="top3-text" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Call the vet about the doe</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ===== Streaks ===== -->
+        <div class="card zone gold">
+          <div class="label" title="Streaks · carried, never broken">Streaks · carried, never broken</div>
+          <div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-top:4px">
+            <div style="display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:20px;color:var(--gold)"><span class="streak-flame lit" style="font-size:21px">🔥</span>14<small style="color:var(--text-tertiary);font-family:var(--font-sans);font-size:12px">prayer</small></div>
+            <div style="display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:20px;color:var(--gold)"><span class="streak-flame lit" style="font-size:21px">🔥</span>9<small style="color:var(--text-tertiary);font-family:var(--font-sans);font-size:12px">stretch</small></div>
+            <div style="display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:20px;color:var(--gold)"><span class="streak-flame lit" style="font-size:21px">🔥</span>6<small style="color:var(--text-tertiary);font-family:var(--font-sans);font-size:12px">reading</small></div>
+            <div style="display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:20px;color:var(--gold)"><span class="streak-flame lit" style="font-size:21px">🔥</span>3<small style="color:var(--text-tertiary);font-family:var(--font-sans);font-size:12px">walk</small></div>
+          </div>
+        </div>
+
+        <!-- ===== Today's plan ===== -->
+        <div class="card">
+          <div class="label" title="Today's plan — Arvis drafts, you approve at /plan">⧗ Today's plan</div>
+          <ul style="list-style:none;margin-top:4px">
+            <li style="display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--border-subtle);font-size:15px;color:var(--text-primary)"><span style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:12px;color:var(--text-tertiary);flex-shrink:0">07:00</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Feed and water</span></li>
+            <li style="display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--border-subtle);font-size:15px;color:var(--text-primary)"><span style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:12px;color:var(--text-tertiary);flex-shrink:0">09:30</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Fence repair, north run</span></li>
+            <li style="display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--border-subtle);font-size:15px;color:var(--text-primary)"><span style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:12px;color:var(--text-tertiary);flex-shrink:0">13:00</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Write 500 words</span></li>
+            <li style="display:flex;align-items:center;gap:13px;padding:12px 0;font-size:15px;color:var(--text-primary)"><span style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:12px;color:var(--text-tertiary);flex-shrink:0">16:00</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Harvest kale</span></li>
+          </ul>
+          <div style="margin-top:8px;text-align:right"><a href="#" class="btn-ghost nav-inert" style="font-size:11px">Open plan →</a></div>
+        </div>
+
+        <!-- ===== Metrics ===== -->
+        <div class="cockpit-metrics" style="grid-column:1 / -1">
+          <div class="card zone green">
+            <div class="label" title="This week · cards shipped">This week · cards shipped</div>
+            <div style="display:flex;justify-content:flex-end;font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);margin-top:2px">max 4/day</div>
+            <div style="height:96px;display:flex;align-items:flex-end;gap:7px;margin-top:6px;padding-bottom:20px">
+              <div style="flex:1;position:relative;height:50%;min-height:6px;background:linear-gradient(var(--accent-bright), var(--accent));border-radius:4px 4px 0 0"><span style="position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:var(--text-tertiary);font-family:var(--font-mono)">M</span></div>
+              <div style="flex:1;position:relative;height:25%;min-height:6px;background:linear-gradient(var(--accent-bright), var(--accent));border-radius:4px 4px 0 0"><span style="position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:var(--text-tertiary);font-family:var(--font-mono)">T</span></div>
+              <div style="flex:1;position:relative;height:75%;min-height:6px;background:linear-gradient(var(--accent-bright), var(--accent));border-radius:4px 4px 0 0"><span style="position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:var(--text-tertiary);font-family:var(--font-mono)">W</span></div>
+              <div style="flex:1;position:relative;height:6%;min-height:6px;background:linear-gradient(var(--accent-bright), var(--accent));border-radius:4px 4px 0 0"><span style="position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:var(--text-tertiary);font-family:var(--font-mono)">T</span></div>
+              <div style="flex:1;position:relative;height:100%;min-height:6px;background:linear-gradient(var(--gold), var(--accent));border-radius:4px 4px 0 0"><span style="position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:var(--text-tertiary);font-family:var(--font-mono)">F</span></div>
+              <div style="flex:1;position:relative;height:50%;min-height:6px;background:linear-gradient(var(--accent-bright), var(--accent));border-radius:4px 4px 0 0"><span style="position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:var(--text-tertiary);font-family:var(--font-mono)">S</span></div>
+              <div style="flex:1;position:relative;height:25%;min-height:6px;background:linear-gradient(var(--accent-bright), var(--accent));border-radius:4px 4px 0 0"><span style="position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:var(--text-tertiary);font-family:var(--font-mono)">S</span></div>
+            </div>
+            <div style="margin-top:8px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <div class="label" title="Streak activity · 14 days">Streak activity · 14 days</div>
+                <span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono)">max 6</span>
+              </div>
+              <svg viewBox="0 0 300 40" width="100%" height="40" preserveAspectRatio="none">
+                <polyline points="0,21 23.08,16 46.15,16 69.23,26 92.31,11 115.38,16 138.46,21 161.54,16 184.62,11 207.69,11 230.77,21 253.85,16 276.92,6 300,16" fill="none" stroke="var(--accent-bright)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="card zone gold">
+            <div class="label" title="Focus by area · open work">Focus by area · open work</div>
+            <div style="display:flex;align-items:center;gap:16px;margin-top:8px">
+              <div style="position:relative;flex:none">
+                <div style="width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--accent-bright) 0% 48%, var(--gold) 48% 80%, var(--status-red) 80% 100%)"></div>
+                <div style="position:absolute;inset:13px;border-radius:50%;background:var(--bg-card)"></div>
+              </div>
+              <div class="index-bubble" style="display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--text-secondary)">
+                <div style="display:flex;align-items:center;gap:7px"><i style="width:9px;height:9px;border-radius:2px;background:var(--accent-bright);display:inline-block;flex-shrink:0"></i><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Homestead</span><span style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;margin-left:auto;color:var(--text-tertiary)">48%</span></div>
+                <div style="display:flex;align-items:center;gap:7px"><i style="width:9px;height:9px;border-radius:2px;background:var(--gold);display:inline-block;flex-shrink:0"></i><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Family</span><span style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;margin-left:auto;color:var(--text-tertiary)">32%</span></div>
+                <div style="display:flex;align-items:center;gap:7px"><i style="width:9px;height:9px;border-radius:2px;background:var(--status-red);display:inline-block;flex-shrink:0"></i><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Writing</span><span style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;margin-left:auto;color:var(--text-tertiary)">20%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Command board ===== -->
+        <div class="card zone rose" style="grid-column:1 / -1">
+          <div class="label" title="Command board · Today">Command board · Today</div>
+          <div style="display:flex;justify-content:flex-end;margin-top:4px;margin-bottom:12px">
+            <div class="index-bubble" style="display:inline-flex;gap:16px;flex-wrap:wrap;align-items:center">
+              <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)"><span style="width:8px;height:8px;border-radius:50%;background:var(--status-green);flex-shrink:0"></span>Homestead</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)"><span style="width:8px;height:8px;border-radius:50%;background:var(--status-yellow);flex-shrink:0"></span>Garden</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)"><span style="width:8px;height:8px;border-radius:50%;background:var(--status-green);flex-shrink:0"></span>Family</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)"><span style="width:8px;height:8px;border-radius:50%;background:var(--status-red);flex-shrink:0"></span>Writing</span>
+            </div>
+          </div>
+          <div class="cockpit-board3">
+            <div>
+              <div class="label" style="margin-bottom:9px">To do</div>
+              <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px;color:var(--text-primary)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Split firewood</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);flex-shrink:0">M</span></div>
+              <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px;color:var(--text-primary)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seed trays for spring</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);flex-shrink:0">S</span></div>
+              <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px;color:var(--text-primary)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Replace coop latch</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);flex-shrink:0">S</span></div>
+            </div>
+            <div>
+              <div class="label" style="margin-bottom:9px">Doing</div>
+              <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px;color:var(--text-primary)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Fence repair, north run</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);flex-shrink:0">L</span></div>
+              <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px;color:var(--text-primary)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Chapter 4 draft</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);flex-shrink:0">M</span></div>
+            </div>
+            <div>
+              <div class="label" style="margin-bottom:9px">Done</div>
+              <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px;opacity:0.5;color:var(--text-primary)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Mulch the beds ✓</span></div>
+              <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px;opacity:0.5;color:var(--text-primary)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Goat hoof trim ✓</span></div>
+              <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px;opacity:0.5;color:var(--text-primary)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Backup the server ✓</span></div>
+            </div>
+          </div>
+          <div style="margin-top:12px;text-align:right"><a href="#" class="btn-ghost nav-inert" style="font-size:11px">Open Board →</a></div>
+        </div>
+
+      </div>
+
+      <!-- ===== Room launcher ===== -->
+      <div class="cockpit-rooms">
+        <a href="#" class="nav-inert" style="flex:1;min-width:150px;background:linear-gradient(168deg, var(--bg-card), var(--bg-elevated));border:1px solid var(--border-default);border-radius:13px;padding:16px;display:flex;align-items:center;gap:13px;text-decoration:none">
+          <span style="font-size:22px">🏠</span><span style="min-width:0"><b style="display:block;color:var(--text-primary)">Hearth</b><small style="color:var(--text-tertiary);font-size:12px;font-family:var(--font-mono)">your day · life · home</small></span>
+        </a>
+        <a href="#" class="nav-inert" style="flex:1;min-width:150px;background:linear-gradient(168deg, var(--bg-card), var(--bg-elevated));border:1px solid var(--border-default);border-radius:13px;padding:16px;display:flex;align-items:center;gap:13px;text-decoration:none">
+          <span style="font-size:22px">📚</span><span style="min-width:0"><b style="display:block;color:var(--text-primary)">Library</b><small style="color:var(--text-tertiary);font-size:12px;font-family:var(--font-mono)">learn · faith · write</small></span>
+        </a>
+        <a href="#" class="nav-inert" style="flex:1;min-width:150px;background:linear-gradient(168deg, var(--bg-card), var(--bg-elevated));border:1px solid var(--border-default);border-radius:13px;padding:16px;display:flex;align-items:center;gap:13px;text-decoration:none">
+          <span style="font-size:22px">🛠</span><span style="min-width:0"><b style="display:block;color:var(--text-primary)">Workshop</b><small style="color:var(--text-tertiary);font-size:12px;font-family:var(--font-mono)">AI · engines · systems</small></span>
+        </a>
+        <a href="#" class="nav-inert" style="flex:1;min-width:150px;background:linear-gradient(168deg, var(--bg-card), var(--bg-elevated));border:1px solid var(--border-default);border-radius:13px;padding:16px;display:flex;align-items:center;gap:13px;text-decoration:none">
+          <span style="font-size:22px">✍️</span><span style="min-width:0"><b style="display:block;color:var(--text-primary)">Writing</b><small style="color:var(--text-tertiary);font-size:12px;font-family:var(--font-mono)">books · poems · songs</small></span>
+        </a>
+        <a href="#" class="nav-inert" style="flex:1;min-width:150px;background:var(--bg-card);border:1px dashed var(--border-default);border-radius:13px;padding:16px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text-tertiary);text-decoration:none;font-size:14px">＋ add a room</a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div id="look-scrim" class="look-scrim" hidden></div>
+<div id="look-drawer" class="look-drawer" hidden role="dialog" aria-label="Look settings">
+  <div class="look-drawer-head">
+    <div class="label">Look</div>
+    <button type="button" id="look-close-btn" class="btn-ghost">Close ✕</button>
+  </div>
+  <div class="look-drawer-body" id="look-body"></div>
+  <div class="look-drawer-foot">
+    <button type="button" id="look-reset-btn" class="btn-ghost" style="width:100%;justify-content:center">Reset to default</button>
+  </div>
+</div>
+
+<div class="corner-plaque" data-short="ACCORD · DEMO · SAMPLE DATA · NOT FOR SALE">ACCORD · RECREATION OF THE COCKPIT · SAMPLE DATA · BUILT FOR FAMILY USE, NOT FOR SALE</div>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// NowClock — the live focus ring. Ticks every second from real Date.now().
+// Today's-shape rows reuse the SAME block list and the SAME fill formula
+// (rawBlocks → schedule).
+// ═══════════════════════════════════════════════════════════════════════════
+function fmtLeft(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000))
+  if (total >= 3600) {
+    const h = Math.floor(total / 3600)
+    const m = Math.floor((total % 3600) / 60)
+    return h + ":" + String(m).padStart(2, "0")
+  }
+  const m = Math.floor(total / 60)
+  const s = total % 60
+  return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0")
+}
+function hhmm(ms) {
+  const d = new Date(ms)
+  let h = d.getHours()
+  const m = d.getMinutes()
+  const ap = h >= 12 ? "pm" : "am"
+  h = ((h + 11) % 12) + 1
+  return h + ":" + String(m).padStart(2, "0") + ap
+}
+function computeNow(blocks, dayEndMs, nowMs) {
+  let idx = -1
+  for (let i = 0; i < blocks.length; i++) if (nowMs >= blocks[i].startMs) idx = i
+  const cur = idx >= 0 ? blocks[idx] : null
+  const curStart = idx >= 0 ? blocks[idx].startMs : ((blocks[0] && blocks[0].startMs) || nowMs)
+  const next = idx + 1 < blocks.length ? blocks[idx + 1] : null
+  const then = idx + 2 < blocks.length ? blocks[idx + 2] : null
+  const nextStart = next ? next.startMs : dayEndMs
+  const span = Math.max(1, nextStart - curStart)
+  const pct = Math.min(100, Math.max(0, ((nowMs - curStart) / span) * 100))
+  const leftMs = Math.max(0, nextStart - nowMs)
+  return { focus: cur ? cur.label : "Open time", next: next, then: then, pct: pct, leftMs: leftMs }
+}
+
+// sample "today's shape" — fixed clock blocks (06:30 Morning ... 21:00 Night)
+const SHAPE_RAW = [
+  { h: 6, m: 30, label: "☀ Morning" },
+  { h: 8, m: 0, label: "🪵 Chores" },
+  { h: 12, m: 0, label: "🍲 Midday" },
+  { h: 14, m: 0, label: "🛠 Workshop" },
+  { h: 18, m: 0, label: "🌙 Evening" },
+  { h: 21, m: 0, label: "📖 Night" },
+]
+const __dayStart = new Date(); __dayStart.setHours(0, 0, 0, 0)
+const DAY_END_MS = __dayStart.getTime() + 24 * 3600000
+const NOW_BLOCKS = SHAPE_RAW.map(function (b) { return { startMs: __dayStart.getTime() + (b.h * 60 + b.m) * 60000, label: b.label } })
+
+// fill is derived from the gap to the next block (visual only)
+function buildSchedule() {
+  return SHAPE_RAW.map(function (b, i) {
+    const mins = b.h * 60 + b.m
+    const nextMins = i + 1 < SHAPE_RAW.length ? (SHAPE_RAW[i + 1].h * 60 + SHAPE_RAW[i + 1].m) : 24 * 60
+    const fill = Math.max(28, Math.min(85, Math.round((Math.max(30, nextMins - mins) / 180) * 60) + 25))
+    return { h: b.h, mins: mins, label: b.label, fill: fill }
+  })
+}
+function renderShape() {
+  const schedule = buildSchedule()
+  const nowMs = Date.now()
+  let curIdx = -1
+  schedule.forEach(function (b, i) { if (nowMs >= __dayStart.getTime() + b.mins * 60000) curIdx = i })
+  const html = schedule.map(function (b, i) {
+    const cur = i === curIdx
+    const h12 = ((b.h + 11) % 12) + 1
+    const color = cur ? "var(--gold)" : "var(--text-tertiary)"
+    const weight = cur ? 700 : 400
+    const barBg = i <= curIdx ? "linear-gradient(90deg, var(--accent), var(--accent-bright))" : "var(--status-grey-bg)"
+    const text = cur ? "◀ you are here" : b.label
+    return '<div style="display:flex;align-items:center;gap:11px;font-size:12px;color:' + color + ';font-weight:' + weight + '">' +
+      '<span style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;width:16px;text-align:right;flex-shrink:0">' + h12 + '</span>' +
+      '<div style="flex:none;width:' + b.fill + '%;height:14px;border-radius:5px;background:' + barBg + '"></div>' +
+      '<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + text + '</span></div>'
+  }).join("")
+  document.getElementById("shape-rows").innerHTML = html
+}
+function tickNow() {
+  const nowMs = Date.now()
+  const r = computeNow(NOW_BLOCKS, DAY_END_MS, nowMs)
+  document.getElementById("now-focus").textContent = r.focus
+  document.getElementById("ring").style.background = "conic-gradient(var(--accent-bright) " + r.pct + "%, var(--status-grey-bg) 0)"
+  document.getElementById("ring-left").textContent = fmtLeft(r.leftMs)
+  document.getElementById("next-label").textContent = r.next ? r.next.label : "—"
+  const ntw = document.getElementById("next-time-wrap")
+  if (r.next) { ntw.hidden = false; document.getElementById("next-time").textContent = hhmm(r.next.startMs) } else { ntw.hidden = true }
+  const tw = document.getElementById("then-wrap")
+  if (r.then) { tw.hidden = false; document.getElementById("then-label").textContent = r.then.label; document.getElementById("then-time").textContent = hhmm(r.then.startMs) } else { tw.hidden = true }
+}
+tickNow()
+setInterval(tickNow, 1000)
+renderShape()
+
+// ===== Top 3 today — demo-only click-to-complete (line-through + var(--text-tertiary)) =====
+document.querySelectorAll(".top3-box").forEach(function (box) {
+  box.addEventListener("click", function () { box.closest(".top3-item").classList.toggle("done") })
+})
+
+// ===== Command bar — Enter or chip click shows one fixed reply line, no network =====
+function showReply(q) {
+  document.getElementById("cmd-reply-q").textContent = '“' + q + '”'
+  document.getElementById("cmd-reply").hidden = false
+}
+const cmdInput = document.getElementById("cmd-input")
+cmdInput.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") { const v = cmdInput.value.trim(); if (v) showReply(v) }
+})
+document.querySelectorAll(".cmd-chip").forEach(function (btn) {
+  btn.addEventListener("click", function () { showReply(btn.getAttribute("data-q")) })
+})
+
+// ===== Rooms / Open plan / Open Board — styled links that go nowhere =====
+document.querySelectorAll("a.nav-inert").forEach(function (a) {
+  a.addEventListener("click", function (e) { e.preventDefault() })
+})
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Look drawer — Appearance, Page frame, and UI style controls. Grids are data-driven from PATTERNS /
+// HYPE_PATTERNS / FRAMES / MOODS / BORDERS / BTNS / HEAD_FONTS (above), so the
+// markup mirrors the JSX generation 1:1 instead of being hand-duplicated.
+// ═══════════════════════════════════════════════════════════════════════════
+const PRESET_BY_NAME = {}
+PRESETS.forEach(function (p) { PRESET_BY_NAME[p.name] = p })
+
+function lookPillStyle(on) {
+  return "display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:var(--radius-pill);cursor:pointer;font-size:12px;font-weight:600;background:" + (on ? "var(--accent-glow)" : "var(--bg-elevated)") + ";color:" + (on ? "var(--accent-bright)" : "var(--text-secondary)") + ";border:1px solid " + (on ? "var(--border-accent)" : "var(--border-default)")
+}
+const LBL = "font-size:12px;color:var(--text-secondary);margin-bottom:8px"
+
+function secQuickLooks() {
+  const pills = PRESETS.map(function (p) {
+    const on = p.texture === demoTheme.texture && p.colors[0] === demoTheme.colors[0] && (p.font || "default") === demoTheme.font
+    return '<button type="button" data-act="applyLook" data-arg="' + p.name + '" style="' + lookPillStyle(on) + '"><span style="font-size:13px">' + p.icon + '</span>' + p.name + '<span style="width:11px;height:11px;border-radius:50%;background:' + p.colors[0] + '"></span></button>'
+  }).join("")
+  return '<div class="card" style="margin-bottom:14px"><div class="label">Quick looks</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">' + pills + "</div></div>"
+}
+function secAccent() {
+  const accent = demoTheme.colors[0]
+  const swatches = ACCENT_SWATCHES.map(function (c) {
+    return '<button type="button" data-act="setColor" data-idx="0" data-arg="' + c + '" title="' + c + '" style="width:26px;height:26px;border-radius:7px;background:' + c + ';cursor:pointer;border:2px solid ' + (accent.toLowerCase() === c ? "#fff" : "transparent") + '"></button>'
+  }).join("")
+  return '<div class="card" style="margin-bottom:14px"><div class="label">Accent colour</div>' +
+    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px">' +
+    '<label style="position:relative;width:40px;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--border-default);flex-shrink:0;cursor:pointer"><span style="position:absolute;inset:0;background:' + accent + '"></span><input aria-label="Custom accent color" type="color" value="' + accent + '" data-act="setColor" data-idx="0" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%"></label>' +
+    swatches + "</div></div>"
+}
+function secAppFont() {
+  const btns = FONTS.map(function (f) {
+    const on = f.key === demoTheme.font
+    return '<button type="button" data-act="pickFont" data-arg="' + f.key + '" style="padding:8px 14px;border-radius:9px;cursor:pointer;font-size:14px;font-family:' + (f.css || "var(--font-sans)") + ";background:" + (on ? "var(--accent-glow)" : "var(--bg-elevated)") + ";border:1px solid " + (on ? "var(--border-accent)" : "var(--border-subtle)") + ";color:" + (on ? "var(--accent-bright)" : "var(--text-primary)") + '">' + f.name + "</button>"
+  }).join("")
+  return '<div class="card" style="margin-bottom:14px"><div class="label">App font</div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">' + btns + "</div></div>"
+}
+function secTexture() {
+  const tiles = PATTERNS.map(function (p) {
+    const selp = p.id === demoTheme.texture
+    const swatchCols = []
+    for (let i = 0; i < p.colors; i++) swatchCols.push(demoTheme.colors[i] || p.defaults[i])
+    const tileBg = p.id === "none" ? "var(--bg-elevated)" : buildVars(p.id, swatchCols)["--app-texture"]
+    return '<button type="button" data-act="pickPattern" data-arg="' + p.id + '" style="cursor:pointer;border-radius:9px;overflow:hidden;padding:0;border:' + (selp ? "2px solid var(--accent-bright)" : "1px solid var(--border-default)") + ';background:var(--bg-elevated)">' +
+      '<div style="height:46px;background-image:' + tileBg + ";background-color:var(--bg-base);background-size:" + (p.id === "none" ? "auto" : p.size) + ';background-repeat:repeat"></div>' +
+      '<div style="font-size:10px;padding:5px 4px;color:' + (selp ? "var(--accent-bright)" : "var(--text-secondary)") + ';font-weight:600">' + p.name + "</div></button>"
+  }).join("")
+  const pat = PATTERNS.find(function (p) { return p.id === demoTheme.texture }) || PATTERNS[0]
+  let extra = ""
+  if (demoTheme.texture !== "none" && pat.colors > 1) {
+    const inputs = []
+    for (let i = 1; i < pat.colors; i++) {
+      const v = demoTheme.colors[i] || pat.defaults[i]
+      inputs.push('<label style="display:flex;flex-direction:column;gap:4px;font-size:10px;color:var(--text-tertiary)">Accent ' + i + '<input aria-label="Texture color ' + i + '" type="color" value="' + v + '" data-act="setColor" data-idx="' + i + '" style="width:52px;height:36px;border:1px solid var(--border-default);border-radius:7px;background:none;cursor:pointer;padding:0"></label>')
+    }
+    extra += '<div class="label" style="margin-top:4px">Texture colours</div><div style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 14px">' + inputs.join("") + "</div>"
+  }
+  if (demoTheme.texture !== "none") {
+    const previewBg = buildVars(demoTheme.texture, demoTheme.colors)["--app-texture"]
+    extra += '<div style="border-radius:10px;overflow:hidden;border:1px solid var(--border-default);margin-bottom:12px"><div style="height:64px;background-color:var(--bg-base);background-image:' + previewBg + ";background-size:" + pat.size + ';background-repeat:repeat"></div></div>'
+  }
+  return '<div class="card" style="margin-bottom:14px"><div class="label">Background texture</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 90px), 1fr));gap:8px;margin:4px 0 12px">' + tiles + "</div>" +
+    extra +
+    '<button type="button" data-act="clearTheme" style="padding:8px 14px;background:transparent;border:1px solid var(--border-default);border-radius:8px;color:var(--text-secondary);font-size:12px;cursor:pointer">Clear texture</button></div>'
+}
+function secModeGlowEtc() {
+  function group(title, g, opts, hint) {
+    const btns = opts.map(function (o) {
+      const on = getLook(g) === o[1]
+      return '<button type="button" data-act="pickLook" data-group="' + g + '" data-arg="' + o[1] + '" style="' + lookPillStyle(on) + '">' + o[0] + "</button>"
+    }).join("")
+    return '<div style="margin-bottom:14px"><div style="' + LBL + '">' + title + '</div><div style="display:flex;gap:7px;flex-wrap:wrap">' + btns + "</div>" + (hint ? '<div style="font-size:10px;color:var(--text-tertiary);margin-top:6px">' + hint + "</div>" : "") + "</div>"
+  }
+  return '<div class="card" style="margin-bottom:14px"><div class="label">Mode &amp; display</div>' +
+    group("Mode", "mode", [["◐ Calm", "calm"], ["◉ Default", ""], ["◑ Hype", "hype"]], "Calm mutes the backdrop &amp; stills motion · Hype amps the ambient glow.") +
+    group("Glow level", "glow", [["Subtle", "glow-lo"], ["Medium", "glow-med"], ["Intense", "glow-hi"]]) +
+    group("Texture intensity", "texint", [["Subtle", "tint-lo"], ["Medium", "tint-med"], ["Bold", "tint-hi"]]) +
+    group("Heading font (display)", "font", [["Modern", "font-modern"], ["Cyber", "font-cyber"], ["Editorial", "font-editorial"]]) +
+    "</div>"
+}
+function secHypeTexture() {
+  const tiles = HYPE_PATTERNS.map(function (p) {
+    const selp = p.id === demoTheme.hypeTex
+    const tileBg = p.id === "none" ? "var(--bg-elevated)" : hypeVars(p.id, demoTheme.hypeColor)["--hype-texture"]
+    return '<button type="button" data-act="pickHypePattern" data-arg="' + p.id + '" style="cursor:pointer;border-radius:9px;overflow:hidden;padding:0;border:' + (selp ? "2px solid var(--accent-bright)" : "1px solid var(--border-default)") + ';background:var(--bg-elevated)">' +
+      '<div style="height:40px;background-image:' + tileBg + ";background-color:var(--bg-base);background-size:" + (p.id === "none" ? "auto" : p.size) + ';background-repeat:repeat"></div>' +
+      '<div style="font-size:10px;padding:5px 4px;color:' + (selp ? "var(--accent-bright)" : "var(--text-secondary)") + ';font-weight:600">' + p.name + "</div></button>"
+  }).join("")
+  let colorPicker = ""
+  if (demoTheme.hypeTex !== "none") {
+    const swatches = ACCENT_SWATCHES.map(function (c) {
+      return '<button type="button" data-act="setHypeCol" data-arg="' + c + '" title="' + c + '" style="width:26px;height:26px;border-radius:7px;background:' + c + ';cursor:pointer;border:2px solid ' + (demoTheme.hypeColor.toLowerCase() === c ? "#fff" : "transparent") + '"></button>'
+    }).join("")
+    colorPicker = '<div style="margin-top:12px"><div class="label">Hype texture colour</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px">' +
+      '<label style="position:relative;width:40px;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--border-default);flex-shrink:0;cursor:pointer"><span style="position:absolute;inset:0;background:' + demoTheme.hypeColor + '"></span><input aria-label="Hype texture color" type="color" value="' + demoTheme.hypeColor + '" data-act="setHypeCol" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%"></label>' +
+      swatches + "</div></div>"
+  }
+  return '<div class="card" style="margin-bottom:14px"><div class="label">Hype texture</div><div style="font-size:10px;color:var(--text-tertiary);margin:4px 0 8px">Shows only in <b>Hype</b> mode, layered over the base texture.</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 84px), 1fr));gap:8px">' + tiles + "</div>" + colorPicker + "</div>"
+}
+function secFrame() {
+  const tiles = FRAMES.map(function (f) {
+    const selp = f.id === demoTheme.frame
+    const v = f.vars
+    return '<button type="button" data-act="pickFrame" data-arg="' + f.id + '" style="cursor:pointer;border-radius:9px;padding:0;overflow:hidden;border:' + (selp ? "2px solid var(--accent-bright)" : "1px solid var(--border-default)") + ';background:var(--bg-elevated)">' +
+      '<div style="height:52px;padding:8px;display:flex"><div style="flex:1;border:' + (v["--frame-border"] !== "0" ? "1px solid var(--accent-bright)" : "1px dashed var(--border-default)") + ";border-radius:" + (v["--frame-radius"] !== "0" ? "6px" : "2px") + ";background:" + (v["--frame-bg"] !== "transparent" ? "var(--bg-card)" : "transparent") + ";margin:" + (v["--page-max"] !== "none" ? "0 8px" : "0") + '"></div></div>' +
+      '<div style="font-size:10px;padding:5px 4px;color:' + (selp ? "var(--accent-bright)" : "var(--text-secondary)") + ';font-weight:600">' + f.name + "</div></button>"
+  }).join("")
+  return '<div class="card" style="margin-bottom:14px"><div class="label">Page frame</div><div style="font-size:10px;color:var(--text-tertiary);margin:4px 0 8px">How much breathing room the page gets.</div><div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 98px), 1fr));gap:8px">' + tiles + "</div></div>"
+}
+function secUiStyle() {
+  const ui = loadUi()
+  const moods = MOODS.map(function (m) {
+    const on = ui.mood === m.id
+    return '<button type="button" data-act="setUiMood" data-arg="' + m.id + '" style="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:none;border:none;padding:0">' +
+      '<span style="width:44px;height:32px;border-radius:8px;background:' + m.swatch + ";border:2px solid " + (on ? "var(--accent-bright)" : "var(--border-default)") + ";box-shadow:" + (on ? "0 0 0 2px var(--accent-glow)" : "none") + '"></span>' +
+      '<span style="font-size:9.5px;color:' + (on ? "var(--accent-bright)" : "var(--text-tertiary)") + ';font-weight:600">' + m.name + "</span></button>"
+  }).join("")
+  const borders = BORDERS.map(function (b) {
+    return '<button type="button" data-act="setUiBorder" data-arg="' + b.id + '" style="' + lookPillStyle(ui.border === b.id) + '">' + b.name + "</button>"
+  }).join("")
+  const btns = BTNS.map(function (b) {
+    const on = ui.btn === b.id
+    const base = b.id === "solid" ? "background:var(--accent);color:#fff;border:none;" : b.id === "soft" ? "background:var(--accent-glow);color:var(--accent-bright);border:1px solid var(--border-accent);" : "background:transparent;color:var(--accent-bright);box-shadow:inset 0 0 0 1.5px var(--accent-bright);border:none;"
+    return '<button type="button" data-act="setUiBtn" data-arg="' + b.id + '" style="padding:9px 16px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;' + base + "outline:" + (on ? "2px solid var(--accent-bright)" : "none") + ';outline-offset:2px">' + b.name + "</button>"
+  }).join("")
+  return '<div class="card" style="margin-bottom:14px"><div class="label">UI style</div>' +
+    '<div style="margin:4px 0 14px"><div style="' + LBL + '">Background mood</div><div style="display:flex;gap:8px;flex-wrap:wrap">' + moods + "</div></div>" +
+    '<div style="margin-bottom:14px"><div style="' + LBL + '">Borders</div><div style="display:flex;gap:7px;flex-wrap:wrap">' + borders + "</div></div>" +
+    '<div><div style="' + LBL + '">Button style</div><div style="display:flex;gap:7px;flex-wrap:wrap">' + btns + "</div></div>" +
+    "</div>"
+}
+function renderPanel() {
+  document.getElementById("look-body").innerHTML =
+    secQuickLooks() + secAccent() + secAppFont() + secTexture() + secModeGlowEtc() + secHypeTexture() + secFrame() + secUiStyle()
+}
+
+// single delegated dispatcher — click (buttons + swatch/preset picks) and
+// input/change (native color pickers; 'input' live-applies, 'change' commits
+// and re-renders so the picker widget is never torn down mid-drag)
+function dispatchAct(el) {
+  const act = el.getAttribute("data-act")
+  if (!act) return
+  const arg = el.hasAttribute("data-arg") ? el.getAttribute("data-arg") : el.value
+  const idx = el.hasAttribute("data-idx") ? parseInt(el.getAttribute("data-idx"), 10) : undefined
+  if (act === "applyLook") applyLook(PRESET_BY_NAME[arg])
+  else if (act === "setColor") setColor(idx, arg)
+  else if (act === "pickFont") pickFont(arg)
+  else if (act === "pickPattern") pickPattern(arg)
+  else if (act === "clearTheme") clearTheme()
+  else if (act === "pickLook") pickLook(el.getAttribute("data-group"), arg)
+  else if (act === "pickHypePattern") pickHypePattern(arg)
+  else if (act === "setHypeCol") setHypeCol(arg)
+  else if (act === "pickFrame") pickFrame(arg)
+  else if (act === "setUiMood") setUiLook({ mood: arg })
+  else if (act === "setUiBorder") setUiLook({ border: arg })
+  else if (act === "setUiBtn") setUiLook({ btn: arg })
+}
+function pickLook(group, value) { setLook(group, value) }
+
+const lookBody = document.getElementById("look-body")
+lookBody.addEventListener("click", function (e) {
+  const el = e.target.closest("[data-act]")
+  if (!el || el.tagName === "INPUT") return
+  dispatchAct(el)
+  renderPanel()
+})
+lookBody.addEventListener("input", function (e) {
+  const el = e.target
+  if (el.tagName === "INPUT" && el.getAttribute("data-act")) dispatchAct(el) // live preview, no re-render (keeps the color wheel open)
+})
+lookBody.addEventListener("change", function (e) {
+  if (e.target.tagName === "INPUT") renderPanel() // commit: refresh swatch highlight state
+})
+
+// drawer open/close
+const lookDrawer = document.getElementById("look-drawer")
+const lookScrim = document.getElementById("look-scrim")
+function openLook() { renderPanel(); lookDrawer.hidden = false; lookScrim.hidden = false; document.getElementById("look-open-btn").setAttribute("aria-expanded", "true") }
+function closeLook() { lookDrawer.hidden = true; lookScrim.hidden = true; document.getElementById("look-open-btn").setAttribute("aria-expanded", "false") }
+document.getElementById("look-open-btn").addEventListener("click", openLook)
+document.getElementById("look-close-btn").addEventListener("click", closeLook)
+lookScrim.addEventListener("click", closeLook)
+document.getElementById("look-reset-btn").addEventListener("click", function () {
+  demoTheme.texture = "wood"; demoTheme.colors = ["#8a5a3c"]; demoTheme.frame = "snug"; demoTheme.font = "serif"; demoTheme.hypeTex = "none"; demoTheme.hypeColor = "#2fd8c6"
+  applyAll()
+  setLook("mode", ""); setLook("glow", "glow-med"); setLook("tex", ""); setLook("texint", "tint-med"); setLook("font", "")
+  setUiLook(Object.assign({}, UI_DEFAULT))
+  renderPanel()
+})
+</script>
+</body>
+</html>

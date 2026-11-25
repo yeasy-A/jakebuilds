@@ -3,23 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jake T. — The Forge</title>
+<title>Jacob Teresi — The Forge</title>
 <meta name="description" content="Build what lasts. Navy veteran · builder of systems that last.">
 <meta name="theme-color" content="#060505">
 
 <!-- Open Graph -->
+<link rel="canonical" href="https://yeasy-a.github.io/jakebuilds/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Jake T. — The Forge">
+<meta property="og:url" content="https://yeasy-a.github.io/jakebuilds/">
+<meta property="og:title" content="Jacob Teresi — The Forge">
 <meta property="og:description" content="Build what lasts. Navy veteran · builder of systems that last.">
-<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image" content="https://yeasy-a.github.io/jakebuilds/assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Jake T. — The Forge">
+<meta name="twitter:title" content="Jacob Teresi — The Forge">
 <meta name="twitter:description" content="Build what lasts. Navy veteran · builder of systems that last.">
-<meta name="twitter:image" content="assets/og-image.png">
+<meta name="twitter:image" content="https://yeasy-a.github.io/jakebuilds/assets/og-image.png">
 
 <link rel="icon" href="assets/anvil-mark.svg" type="image/svg+xml">
 
@@ -140,7 +142,7 @@ a:hover,a:focus-visible{ text-decoration:underline; }
 .skip-link:focus{ top:0.75rem; text-decoration:none; }
 
 /* ===================================================================
-   HEADER #sky — the hero, 100dvh. Living starforge.
+   HEADER #sky — the hero, one small-viewport tall. Living starforge.
    Layer order (explicit z-index, stacked bottom to top):
    0 sky-bg (CSS gradients) · 1 sky-field (ambient canvas) ·
    2 sky-constellation-wrap (SVG) · 3 sky-content (text) · 4 greek key.
@@ -198,16 +200,10 @@ a:hover,a:focus-visible{ text-decoration:underline; }
 }
 
 /* -- stars -- */
-/* NOTE: two rendering gotchas here:
-   (1) transitioning `opacity` on a <g> ancestor of a radialGradient-filled
+/* NOTE: transitioning `opacity` on a <g> ancestor of a radialGradient-filled
    <circle> blanks the gradient's paint entirely in this rendering path — so
-   opacity is never a transitioned property here; JS pops it instantly.
-   (2) requestAnimationFrame chains do not reliably continue under headless
-   `--virtual-time-budget` capture (only the first callback fires), so the
-   position drift is NOT rAF-driven — it uses this CSS `transform` transition
-   instead, which does reach translate(0px,0px) reliably under
-   virtual-time-budget capture, even where a painted PNG can otherwise
-   show a stale mid-transition frame. */
+   opacity is never a transitioned property here; JS pops it instantly. The
+   position drift is a plain CSS `transform` transition. */
 .star-drift{
   transform:translate(0,0);
   opacity:1;
@@ -488,10 +484,7 @@ main section > .floor{
   margin-bottom:1.5rem;
 }
 .plaque-chip{
-  /* three mono stat chips — explicit font-family needed here: without it
-     this inherits the Fraunces body font, which silently drops the "+"
-     glyph (not in the vendored Fraunces subset, same issue as the ▼/→
-     glyphs elsewhere); JetBrains Mono carries it. */
+  /* mono stat chips */
   font-family:var(--type-mono);
   font-size:0.66rem;
   letter-spacing:0.08em;
@@ -509,10 +502,10 @@ main section > .floor{
   overflow:hidden; /* clips the Ken Burns scale + the vignette canvas to the 1px frame */
 }
 
-/* ---- screenshot plaques (muster / sparks / patternmap / veteran-finder / boilerplate / faith): the shot +
+/* ---- screenshot plaques: the shot +
    its slow Ken Burns (animation-duration 18s, timing linear, direction
    alternate, scale 1.0→1.045). Each plaque gets its own pan origin + a
-   negative delay so the three don't breathe in lockstep.
+   negative delay so they don't breathe in lockstep.
    Reduced-motion: no @keyframes rule is even active — a static frame. ---- */
 .plaque-shot{
   width:100%;
@@ -525,24 +518,18 @@ main section > .floor{
   .plaque-shot{ animation:kenburns 18s linear infinite alternate; animation-delay:var(--kb-delay, 0s); }
 }
 @keyframes kenburns{ from{ transform:scale(1); } to{ transform:scale(1.045); } }
+.media-slot--accord .plaque-shot{ --kb-origin:50% 32%; --kb-delay:-4s; }
+.media-slot--ark .plaque-shot{ --kb-origin:50% 40%; --kb-delay:-10s; }
 .media-slot--muster .plaque-shot{ --kb-origin:50% 30%; --kb-delay:-3s; }
 .media-slot--sparks .plaque-shot{ --kb-origin:72% 62%; --kb-delay:-9s; }
-.media-slot--patternmap .plaque-shot{ --kb-origin:50% 45%; --kb-delay:-15s; }
 .media-slot--veteran-finder .plaque-shot{ --kb-origin:30% 40%; --kb-delay:-6s; }
-.media-slot--boilerplate .plaque-shot{ --kb-origin:50% 50%; --kb-delay:-12s; }
 .media-slot--faith .plaque-shot{ --kb-origin:50% 28%; --kb-delay:-18s; }
 
-/* ---- FIRMAMENT plaque: live galaxy vignette canvas (vignette()) +
-   its bottom-right overlay link ---- */
+/* ---- FIRMAMENT plaque: live galaxy vignette canvas (vignette()) ---- */
 .vignette-canvas{
   position:absolute; inset:0;
   width:100%; height:100%;
   display:block;
-}
-.vignette-action{
-  position:absolute;
-  right:0; bottom:0;
-  z-index:2;
 }
 
 /* ---- HOMELAB plaque: the inlined schematic SVG fills the slot — inlined
@@ -551,8 +538,7 @@ main section > .floor{
 .homelab-schematic-wrap{ width:100%; height:100%; }
 .homelab-schematic-wrap svg{ width:100%; height:100%; display:block; }
 
-.plaque-action,
-.vignette-action{
+.plaque-action{
   font-family:var(--type-mono);
   font-weight:500;
   font-size:0.82rem;
@@ -568,11 +554,12 @@ main section > .floor{
   padding:14px 0.9rem;
   margin:-14px -0.9rem;
 }
-.vignette-action{ margin:0; } /* absolutely positioned — no flow footprint to protect */
 
 @media (max-width:640px){
   .plaque{ padding:1.75rem; }
 }
+
+.noscript-works li{ font-family:var(--type-display); font-weight:600; font-size:1.6rem; padding:0.6rem 0; }
 
 /* ===================================================================
    #maker — the flame section
@@ -940,6 +927,18 @@ main section > .floor{
   transform:translateY(0);
   pointer-events:auto;
 }
+/* backing plate: page text scrolls under the map, never through it */
+.minimap-visual{
+  background:color-mix(in srgb, var(--iron) 92%, transparent);
+  border:1px solid var(--iron-edge);
+  padding:6px;
+}
+@media (max-width:700px){
+  /* too small to hit single stars with a thumb: the whole map is one
+     button that returns to the sky, where every star is a full-size target */
+  .minimap-visual{ cursor:pointer; }
+  .minimap-star{ pointer-events:none; }
+}
 .minimap-svg{ width:100%; height:100%; display:block; overflow:visible; }
 .minimap-thread{ stroke:var(--gold); stroke-width:1; opacity:0.4; fill:none; }
 .minimap-dim{ fill:var(--text-dim); opacity:0.25; }
@@ -1091,6 +1090,10 @@ footer{
   .star-label{ opacity:1 !important; }
 }
 </style>
+<noscript><style>
+.hook-line,.name-block,.scroll-cue,.reveal,.reveal-row{ opacity:1; transform:none; }
+#descent{ min-height:20vh; }
+</style></noscript>
 </head>
 <body>
 
@@ -1106,7 +1109,7 @@ footer{
     <p class="hook-line" id="hookLine">Build what lasts.</p>
     <div class="name-block" id="nameBlock">
       <p class="name-kicker kicker">The forge of</p>
-      <h1 class="name-title struck-metal">Jake T.</h1>
+      <h1 class="name-title struck-metal">Jacob Teresi</h1>
       <p class="name-role kicker">Navy veteran &middot; builder of systems that last</p>
     </div>
     <p class="scroll-cue kicker" id="scrollCue"><span class="glyph" aria-hidden="true">&#9660;</span> Descend</p>
@@ -1130,6 +1133,17 @@ footer{
     <div class="floor">
       <h2 class="section-kicker kicker">01 &middot; The works</h2>
       <div class="plaques" id="worksList"><!-- WORKS rendered here --></div>
+      <noscript>
+        <ul class="noscript-works">
+          <li><a href="demos/accord/">Accord</a></li>
+          <li><a href="https://yeasy-a.github.io/Firmament/">Firmament</a></li>
+          <li><a href="demos/ark/">Ark</a></li>
+          <li><a href="https://yeasy-a.github.io/jakes-workshop/sparks/">Sparks</a></li>
+          <li><a href="demos/muster/">Muster</a></li>
+          <li><a href="demos/veteran-finder/">Veteran Finder</a></li>
+          <li><a href="demos/faith/">Faith</a></li>
+        </ul>
+      </noscript>
     </div>
   </section>
 
@@ -1178,10 +1192,11 @@ footer{
         <span class="tick tick-bl" aria-hidden="true"></span>
         <span class="tick tick-br" aria-hidden="true"></span>
         <h3 class="commission-title struck-metal">The forge takes commissions.</h3>
-        <p class="commission-line">Open to freelance and contract software work.</p>
+        <p class="commission-line">Open to full-time roles, freelance, and contract software work.</p>
         <div class="commission-actions">
           <a class="commission-action" href="mailto:jacobbuildsnships@proton.me">Write the forge &rarr;</a>
           <a class="commission-action" href="https://github.com/yeasy-A" target="_blank" rel="noopener noreferrer">See the code &rarr;</a>
+          <a class="commission-action" href="assets/Jacob-Teresi-Resume.pdf" target="_blank" rel="noopener">Read the resume &rarr;</a>
         </div>
       </div>
     </div>
@@ -1195,7 +1210,7 @@ footer{
   <svg class="makers-mark" viewBox="-4 -4 108 78" role="img" aria-label="Anvil maker's mark">
     <path fill="var(--gold)" opacity="0.5" d="M2,30 L34,14 L92,14 L80,26 L74,42 L86,48 L92,60 L22,60 L28,48 L40,42 L34,26 L34,20 Z"/>
   </svg>
-  <p class="footer-line">Forged by hand &middot; &copy; 2026 Jake T.</p>
+  <p class="footer-line">Forged by hand &middot; &copy; 2026 Jacob Teresi</p>
   <p class="footer-close">the forge itself is the reward</p>
   <svg class="greek-key-strip" viewBox="0 0 280 14" preserveAspectRatio="none" aria-hidden="true" focusable="false">
     <defs>
@@ -1222,30 +1237,38 @@ footer{
 
   // ===== MODULE: data — the only place content lives =====
   var WORKS = [
-    { id:'firmament', star:'horn', title:'Firmament',
-      line:'The Bible as a navigable galaxy — 35,389 verses as stars, 344,799 cross-references as light.',
-      kicker:'FORGED 2026 · LIVE', visual:'vignette', href:'https://yeasy-a.github.io/Firmament/' },
-    { id:'muster', star:'face-l', title:'Muster',
-      line:'A free field desk for veterans — a VA rating calculator, claim deadlines, PACT Act, and the full benefits stack. Nothing you enter ever leaves your browser.',
-      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/muster.webp', href:'demos/muster/' },
+    { id:'accord', star:'horn', title:'Accord',
+      line:'A self-hosted family and homestead app with a theme engine you tune live: textures, glow, type, and accent.',
+      kicker:'FORGED 2025 · DEMO', visual:'assets/shots/accord.webp', href:'demos/accord/',
+      stack:['Next.js','React','TypeScript','PostgreSQL'] },
+    { id:'firmament', star:'face-l', title:'Firmament',
+      line:'The Bible as a navigable galaxy — 35,389 verses as stars, 301,538 cross-references as light.',
+      kicker:'FORGED 2026 · LIVE', visual:'vignette', href:'https://yeasy-a.github.io/Firmament/',
+      stack:['Three.js','WebGL shaders','Vanilla JS','No build step'] },
+    { id:'ark', star:'waist', title:'Ark',
+      line:'The homestead\'s bookshelf: lessons, garden, apothecary, journal, and Scripture on a shelf you restain yourself.',
+      kicker:'FORGED 2026 · DEMO', visual:'assets/shots/ark.webp', href:'demos/ark/',
+      stack:['Next.js','React','TypeScript','PostgreSQL'] },
     { id:'sparks', star:'face-r', title:'Sparks',
       line:'Twenty-seven brain-training games, built for the way my own mind actually works — idea-rich, competitive, and better with a scoreboard.',
-      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/sparks.webp', href:'demos/sparks/' },
-    { id:'patternmap', star:'waist', title:'PatternMap',
-      line:"Scripture's recurring patterns as a navigable graph — Firmament's ancestor.",
-      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/patternmap.webp', href:'demos/patternmap/' },
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/sparks.webp', href:'https://yeasy-a.github.io/jakes-workshop/sparks/',
+      stack:['Vanilla JS','Single file','No dependencies'] },
+    { id:'muster', star:'boiler', title:'Muster',
+      line:'A free field desk for veterans — a VA rating calculator, claim deadlines, PACT Act, and the full benefits stack. Nothing you enter ever leaves your browser.',
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/muster.webp', href:'demos/muster/',
+      stack:['Vanilla JS','Single file','No backend'] },
     { id:'veteran-finder', star:'vetfinder', title:'Veteran Finder',
       line:'A field-manual resource locator — vetted veteran nonprofits by need, era, and mission, with the crisis line always one tap away.',
-      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/veteran-finder.webp', href:'demos/veteran-finder/' },
-    { id:'boilerplate', star:'boiler', title:'Boilerplate',
-      line:'A prompt engine — a shelf of battle-tested prompts for getting real work out of an AI, filed by the mistake each one prevents.',
-      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/boilerplate.webp', href:'demos/boilerplate/' },
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/veteran-finder.webp', href:'demos/veteran-finder/',
+      stack:['Vanilla JS','Single file','No backend'] },
     { id:'faith', star:'faith', title:'Faith',
       line:'A quiet daily companion — verse and saint of the day, the Rosary, the Examen, Divine Mercy, and a small library of prayers.',
-      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/faith.webp', href:'demos/faith/' },
+      kicker:'FORGED 2026 · LIVE', visual:'assets/shots/faith.webp', href:'demos/faith/',
+      stack:['Vanilla JS','Single file','No dependencies'] },
     { id:'homelab', star:'base', title:'The Homelab',
       line:'~20 self-hosted services — media, photos, personal cloud, backups, DNS filtering, and home automation — reached only over a private mesh, nothing exposed to the public internet. Built, broken, and rebuilt by hand.',
-      kicker:'RUNNING SINCE 2025', visual:'schematic', href:null }
+      kicker:'RUNNING SINCE 2025', visual:'schematic', href:null,
+      stack:['24/7','20+ services','Self-hosted'] }
   ];
 
   // Constellation geometry, inlined verbatim from assets/constellation.json —
@@ -1290,7 +1313,7 @@ footer{
   };
 
   var STRENGTHS = [
-    { rank:1, star:'strength-1', name:'IDEATION',     line:'never out of ideas; five of them hang in the sky above' },
+    { rank:1, star:'strength-1', name:'IDEATION',     line:'never out of ideas; eight of them hang in the sky above' },
     { rank:2, star:'strength-2', name:'INTELLECTION', line:'thinks before the hammer falls' },
     { rank:3, star:'strength-3', name:'COMPETITION',  line:'keeps score; plays to finish' },
     { rank:4, star:'strength-4', name:'ADAPTABILITY', line:'re-plans without breaking' },
@@ -1307,8 +1330,10 @@ footer{
 
   // NOTE: the homelab ledger entry intentionally avoids the real internal
   // service hostname — internal hostnames don't belong on a public page.
-  // Renamed to 'The Homelab' (matches WORKS[4].title) instead.
+  // Named 'The Homelab' to match its plaque.
   var LEDGER = [
+    ['2025', 'Accord',          'a family and homestead app, one theme engine, live textures'],
+    ['2026', 'Ark',             'the homestead bookshelf, wood and brass, restained to taste'],
     ['2026', 'Firmament',       'a universe of Scripture, in the browser'],
     ['2026', 'Muster',          'a free field desk for veterans, VA.gov-cited'],
     ['2026', 'Veteran Finder',  'vetted veteran resources, crisis line always up'],
@@ -1320,9 +1345,11 @@ footer{
     ['2025', 'The Homelab',     '20+ services, self-hosted, built by hand']
   ];
 
-  // Alt text for the three screenshot plaques: name the app AND
+  // Alt text for the screenshot plaques: name the app AND
   // what's visible — never a bare filename or the title alone.
   var SHOT_ALT = {
+    'accord': 'Accord app Cockpit screen on a dark forest-green theme with a wood-grain texture background — a live countdown ring, today\'s shape timeline, top-three tasks, streak flames, a weekly bar chart, and a three-column command board.',
+    'ark': 'Ark app home — a dark-stained wooden bookshelf with brass labels, shelves for Farmschool, Garden, Apothecary, Writing, and Bible, and a lamp and candle on the shelf.',
     'muster': 'Muster app Calculator screen showing a 90% combined VA rating dial, a $2,704.30 monthly compensation figure, and a dependents entry form.',
     'veteran-finder': 'Veteran Finder app — a field-manual "FM 4-VET" resource locator with a prominent crisis-line strip (988, 838255, 911) and organization cards for the DAV, VFW, and American Legion.',
     'boilerplate': 'Boilerplate prompt-engine app — a dark "shelf" of prompt cards grouped by category (Calibrate, Root Cause, Straight Talk), each with copy and add-to-hopper buttons.',
@@ -1433,10 +1460,10 @@ footer{
       line.textContent = w.line;
       article.appendChild(line);
 
-      if(w.id === 'homelab'){
+      if(w.stack){
         var chips = document.createElement('div');
         chips.className = 'plaque-chips';
-        ['24/7','20+ SERVICES','SELF-HOSTED'].forEach(function(c){
+        w.stack.forEach(function(c){
           var chip = document.createElement('span');
           chip.className = 'plaque-chip';
           chip.textContent = c;
@@ -1472,7 +1499,7 @@ footer{
         svgWrap.innerHTML = HOMELAB_SVG;
         media.appendChild(svgWrap);
       } else {
-        // MUSTER / SPARKS / PATTERNMAP / VETERAN FINDER / BOILERPLATE / FAITH: the screenshot + its Ken Burns
+        // every other plaque: the screenshot + its Ken Burns
         // (pure CSS animation — see .plaque-shot rules).
         var img = document.createElement('img');
         img.className = 'plaque-shot';
@@ -1480,7 +1507,7 @@ footer{
         img.loading = 'lazy';
         img.decoding = 'async';
         img.width = 1400;
-        img.height = 900;
+        img.height = /accord|ark/.test(w.id) ? 788 : 900;
         img.alt = SHOT_ALT[w.id] || w.title;
         media.appendChild(img);
       }
@@ -2107,12 +2134,12 @@ footer{
     var labelsGroup = el('g', { 'aria-hidden':'true' });
     svg.appendChild(labelsGroup);
 
-    // -- anvil: 5 named work stars + 7 dim structural stars --
+    // -- anvil: named work stars + dim structural stars --
     CONSTELLATION.anvil.forEach(function(p){
       var w = p.role ? workByStar[p.role] : null;
       if(w){
-        var isFirmament = (w.id === 'firmament');
-        var star = buildStar(p, { haloR: isFirmament ? 14 : 10, coreR: isFirmament ? 3.2 : 2.5, crossFlare: isFirmament });
+        var isFlagship = (w.id === 'accord');
+        var star = buildStar(p, { haloR: isFlagship ? 14 : 10, coreR: isFlagship ? 3.2 : 2.5, crossFlare: isFlagship });
         star.outer.classList.add('star-hit');
         star.outer.setAttribute('role', 'link');
         star.outer.setAttribute('tabindex', '0');
@@ -2122,7 +2149,8 @@ footer{
         star.inner.insertBefore(hit, star.inner.firstChild);
         var lo = labelOffset(p.role);
         var labelWrap = el('g', { transform: 'translate(' + p.x + ',' + p.y + ')' });
-        var label = el('text', { class:'star-label', x:lo.dx, y:lo.dy, 'text-anchor':lo.anchor });
+        var label = el('text', { class:'star-label', x:lo.dx, y:lo.dy, 'text-anchor':lo.anchor,
+          'data-role':p.role, 'data-ax':0, 'data-ay':0, 'data-dx':lo.dx, 'data-dy':lo.dy, 'data-anchor':lo.anchor });
         label.textContent = w.title.toUpperCase();
         labelWrap.appendChild(label);
         labelsGroup.appendChild(labelWrap);
@@ -2136,10 +2164,10 @@ footer{
 
     function labelOffset(role){
       switch(role){
-        case 'horn':   return { dx:0,   dy:34, anchor:'middle' }; /* below FIRMAMENT's cross-flare spikes (haloR*2.2 ≈ 31px reach), avoiding overlap */
+        case 'horn':   return { dx:0,   dy:34, anchor:'middle' }; /* below the flagship's cross-flare spikes (haloR*2.2 ≈ 31px reach), avoiding overlap */
         case 'face-l': return { dx:0,   dy:-15, anchor:'middle' };
         case 'face-r': return { dx:8,   dy:-13, anchor:'start' };
-        case 'waist':  return { dx:-16, dy:5,  anchor:'end' };
+        case 'waist':  return { dx:12,  dy:3,  anchor:'start' }; /* inside the anvil body, clear of the FAITH star beside it */
         case 'base':   return { dx:0,   dy:20, anchor:'middle' };
         case 'boiler':    return { dx:9,   dy:-12, anchor:'start' };
         case 'vetfinder': return { dx:7,   dy:17,  anchor:'start' };
@@ -2178,7 +2206,8 @@ footer{
     var flameHit = el('circle', { cx:flameCenter.x, cy:flameCenter.y, r:70, fill:'transparent', class:'star-hit-area' });
     flameOuter.insertBefore(flameHit, flameOuter.firstChild);
     var flameLabel = el('text', {
-      class:'star-label', x: byId['f5'].x + 6, y: byId['f5'].y - 12, 'text-anchor':'start'
+      class:'star-label', x: byId['f5'].x + 6, y: byId['f5'].y - 12, 'text-anchor':'start',
+      'data-role':'flame', 'data-ax':byId['f5'].x, 'data-ay':byId['f5'].y, 'data-dx':6, 'data-dy':-12, 'data-anchor':'start'
     });
     flameLabel.textContent = 'THE MAKER';
     labelsGroup.appendChild(flameLabel);
@@ -2227,6 +2256,33 @@ footer{
           hit.setAttribute('data-base-r', base);
         }
         hit.setAttribute('r', Math.max(base, minR));
+      });
+      sizeLabels(scale);
+    }
+
+    // ---- label sizing: the labels are SVG text, so a fixed user-unit size
+    // shrinks with the constellation (4px on a phone). Size them from the
+    // same measured scale so they always render at a readable CSS-px size,
+    // and push the below-star labels down by the extra cap height. ----
+    var BASE_LABEL = 6.6; // the user-unit size the offsets in labelOffset() were tuned for
+    function sizeLabels(scale){
+      var narrow = window.innerWidth <= 640;
+      var fu = Math.max(BASE_LABEL, (narrow ? 10 : 11) / scale);
+      var grow = fu - BASE_LABEL;
+      svg.querySelectorAll('.star-label').forEach(function(l){
+        var role = l.getAttribute('data-role');
+        var dx = parseFloat(l.getAttribute('data-dx'));
+        var dy = parseFloat(l.getAttribute('data-dy'));
+        var anchor = l.getAttribute('data-anchor');
+        if(narrow && role === 'vetfinder'){ dx = 4; anchor = 'end'; } // long label: run it leftward under the base instead of off the screen edge
+        if(dy > 10) dy += grow * 0.8;        // below the star: clear the taller caps
+        else if(dy > 0) dy += grow * 0.35;   // beside the star: stay vertically centered
+        l.style.fontSize = fu.toFixed(2) + 'px';
+        l.style.letterSpacing = (fu * 0.09).toFixed(2) + 'px';
+        l.style.strokeWidth = (fu / 3).toFixed(2) + 'px';
+        l.setAttribute('x', parseFloat(l.getAttribute('data-ax')) + dx);
+        l.setAttribute('y', parseFloat(l.getAttribute('data-ay')) + dy);
+        l.setAttribute('text-anchor', anchor);
       });
     }
     sizeHitAreas();
@@ -2602,15 +2658,12 @@ footer{
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
         visible = entry.isIntersecting;
-        // Console line makes the pause/resume state observable for debugging.
-        console.log('[vignette] ' + (visible ? 'resumed (visible)' : 'paused (offscreen)'));
       });
       sync();
     }, { threshold: 0 });
     io.observe(wrap);
     document.addEventListener('visibilitychange', function(){
       pageVisible = !document.hidden;
-      console.log('[vignette] ' + (pageVisible ? 'resumed (document visible)' : 'paused (document hidden)'));
       sync();
     });
     window.addEventListener('resize', resize);
@@ -2695,20 +2748,20 @@ footer{
     // (shipped + commission have no star of their own — they reuse
     // homelab's base star as the shared indicator).
     var SECTIONS = [
-      { id:'firmament',      label:'Firmament',      star:'horn' },
-      { id:'muster',         label:'Muster',         star:'face-l' },
+      { id:'accord',         label:'Accord',         star:'horn' },
+      { id:'firmament',      label:'Firmament',      star:'face-l' },
+      { id:'ark',            label:'Ark',            star:'waist' },
       { id:'sparks',         label:'Sparks',         star:'face-r' },
-      { id:'patternmap',     label:'PatternMap',     star:'waist' },
+      { id:'muster',         label:'Muster',         star:'boiler' },
       { id:'veteran-finder', label:'Veteran Finder', star:'vetfinder' },
-      { id:'boilerplate',    label:'Boilerplate',    star:'boiler' },
       { id:'faith',          label:'Faith',          star:'faith' },
       { id:'homelab',        label:'The Homelab',    star:'base' },
       { id:'maker',          label:'The Maker',      star:'flame' },
       { id:'shipped',        label:'Shipped',        star:'base' },
       { id:'commission',     label:'The Commission', star:'base' }
     ];
-    var LABELS = { 'horn':'FIRMAMENT', 'face-l':'MUSTER', 'face-r':'SPARKS', 'waist':'PATTERNMAP', 'base':'THE HOMELAB', 'boiler':'BOILERPLATE', 'vetfinder':'VETERAN FINDER', 'faith':'FAITH', 'flame':'THE MAKER' };
-    var starToSection = { 'horn':'firmament', 'face-l':'muster', 'face-r':'sparks', 'waist':'patternmap', 'base':'homelab', 'boiler':'boilerplate', 'vetfinder':'veteran-finder', 'faith':'faith', 'flame':'maker' };
+    var LABELS = { 'horn':'ACCORD', 'face-l':'FIRMAMENT', 'face-r':'SPARKS', 'waist':'ARK', 'base':'THE HOMELAB', 'boiler':'MUSTER', 'vetfinder':'VETERAN FINDER', 'faith':'FAITH', 'flame':'THE MAKER' };
+    var starToSection = { 'horn':'accord', 'face-l':'firmament', 'face-r':'sparks', 'waist':'ark', 'base':'homelab', 'boiler':'muster', 'vetfinder':'veteran-finder', 'faith':'faith', 'flame':'maker' };
 
     var SVGNS = 'http://www.w3.org/2000/svg';
     function el(tag, attrs){
@@ -2809,6 +2862,9 @@ footer{
     svg.appendChild(starsG);
     visual.appendChild(svg);
     nav.appendChild(visual);
+    visual.addEventListener('click', function(){
+      if(window.innerWidth <= 700) travelTo('sky', 900);
+    });
 
     // ---- 3. scrollspy: burn the star of whichever section is centered in
     // the viewport; others dim (default, no .is-active class). ----

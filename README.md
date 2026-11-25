@@ -1,8 +1,8 @@
-# The Forge — Jake T.
+# The Forge — Jacob Teresi
 
 A portfolio site. Build what lasts.
 
-Live at: (deploys to Cloudflare Pages)
+Live at: https://yeasy-a.github.io/jakebuilds/
 
 No build step. Open `index.html` directly, or serve the folder as-is — everything is
 inline or vendored locally, with no external requests at runtime.
@@ -11,13 +11,18 @@ inline or vendored locally, with no external requests at runtime.
 
 - `index.html` — the entire site: markup, styles, and script in one file.
 - `assets/` — vendored fonts, images, and inline-source SVGs.
-- `demos/` — static copies of three live apps, linked from the site.
+- `demos/` — static copies of the live apps, linked from the site.
 
 ## Demos
 
-- `demos/va/` — VA Toolkit, free veteran benefits calculators.
-- `demos/sparks/` — Sparks, five brain-training games in a single file.
-- `demos/patternmap/` — PatternMap, a navigable graph of biblical patterns.
+- `demos/accord/` — Accord, the family and homestead app's cockpit and theme engine, with sample data.
+- `demos/ark/` — Ark, the homestead bookshelf.
+- `demos/muster/` — Muster, free veteran benefits calculators and guides.
+- `demos/veteran-finder/` — Veteran Finder, a locator for vetted veteran nonprofits.
+- `demos/faith/` — Faith, a daily prayer companion.
+- `demos/boilerplate/`, `demos/patternmap/`, `demos/sparks/` (a five-game cut) — kept but not linked from the page.
+
+Firmament and the full Sparks live in their own repositories and are linked from the page.
 
 ## Rights
 

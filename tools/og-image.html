@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>og-image source</title>
+<!-- Source for assets/og-image.png. Serve the repo root, open tools/og-image.html
+     at 1200x630 and screenshot it. -->
+<style>
+@font-face{ font-family:'Fraunces'; src:url('../assets/fonts/fraunces-600.woff2') format('woff2'); font-weight:600; }
+@font-face{ font-family:'JetBrains Mono'; src:url('../assets/fonts/jetbrainsmono-500.woff2') format('woff2'); font-weight:500; }
+html,body{ margin:0; }
+body{ width:1200px; height:630px; position:relative; overflow:hidden; background:#060505;
+  background-image:
+    radial-gradient(60% 40% at 50% 112%, rgba(200,106,30,.55) 0%, transparent 70%),
+    radial-gradient(40% 22% at 50% 100%, rgba(255,243,220,.10) 0%, transparent 60%),
+    linear-gradient(to bottom, #060505 0%, #060505 50%, #1C0F06 100%); }
+canvas,svg{ position:absolute; inset:0; }
+.name{ position:absolute; left:0; right:0; top:444px; text-align:center; font:600 84px/1 'Fraunces',Georgia,serif;
+  letter-spacing:.05em; text-transform:uppercase; color:#EDE6D8; text-shadow:0 -1px 0 rgba(0,0,0,.5),0 1px 0 rgba(201,151,75,.18); }
+.hook{ position:absolute; left:0; right:0; top:552px; text-align:center; font:500 20px/1 'JetBrains Mono',monospace;
+  letter-spacing:.3em; text-transform:uppercase; color:#EBBD6E; }
+</style></head><body>
+<canvas id="c" width="1200" height="630"></canvas>
+<svg id="s" viewBox="0 0 1200 630"></svg>
+<div class="name">Jacob Teresi</div>
+<div class="hook">Build what lasts.</div>
+<script>
+(async function(){
+  var seed = 7; function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+  var ctx = document.getElementById('c').getContext('2d');
+  for(var i = 0; i < 300; i++){
+    ctx.beginPath(); ctx.fillStyle = 'rgba(237,230,216,' + (0.18 + rnd() * 0.5).toFixed(2) + ')';
+    ctx.arc(rnd() * 1200, rnd() * 630, 0.5 + rnd() * 1.2, 0, 6.3); ctx.fill();
+  }
+  var C = await (await fetch('../assets/constellation.json')).json();
+  var svg = document.getElementById('s'), NS = 'http://www.w3.org/2000/svg', by = {};
+  var K = 1.12, OX = 600 - 387 * K, OY = 34 - 42.83 * K + 20; // constellation centered, flame tip near the top
+  function X(p){ return OX + p.x * K; } function Y(p){ return OY + p.y * K; }
+  function el(t, a){ var e = document.createElementNS(NS, t); for(var k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; }
+  svg.innerHTML = '<defs><radialGradient id="g"><stop offset="0" stop-color="#FFF3DC"/><stop offset=".3" stop-color="#EBBD6E" stop-opacity=".85"/><stop offset="1" stop-color="#EBBD6E" stop-opacity="0"/></radialGradient>' +
+    '<radialGradient id="f"><stop offset="0" stop-color="#FFF3DC"/><stop offset=".3" stop-color="#E06A28" stop-opacity=".85"/><stop offset="1" stop-color="#E06A28" stop-opacity="0"/></radialGradient></defs>';
+  C.anvil.concat(C.flame).forEach(function(p){ by[p.id] = p; });
+  C.threads.forEach(function(t){ var a = by[t[0]], b = by[t[1]];
+    el('line', { x1:X(a), y1:Y(a), x2:X(b), y2:Y(b), stroke:'#C9974B', 'stroke-width':1.2, opacity:.55 }); });
+  var named = { a0:1, a1:1, a2:1, a3:1, a6:1, a7:1, a8:1, a9:1 };
+  C.anvil.forEach(function(p){ var big = named[p.id], r = p.id === 'a0' ? 17 : big ? 12 : 7;
+    el('circle', { cx:X(p), cy:Y(p), r:r, fill:'url(#g)', opacity: big ? .7 : .3 });
+    el('circle', { cx:X(p), cy:Y(p), r: big ? 3 : 1.8, fill:'#FFF3DC', opacity: big ? .95 : .55 }); });
+  C.flame.forEach(function(p){
+    el('circle', { cx:X(p), cy:Y(p), r:10, fill:'url(#f)', opacity:.6 });
+    el('circle', { cx:X(p), cy:Y(p), r:2.7, fill:'#E06A28' }); });
+  document.title = 'ready';
+})();
+</script></body></html>
